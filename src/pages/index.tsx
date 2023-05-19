@@ -108,6 +108,25 @@ export default function Home() {
     }
   }
 
+  const withdraw = async () => {
+    console.log('Withdrawing...')
+    try {
+      setTxLink('')
+      setLoadingWithdraw(true)
+
+      const withdraw = await cfa.withdrawTo(address, ethers.utils.parseEther('1000'))
+      const withdrawReceipt = await withdraw.wait(1)
+      console.log('tx:', withdrawReceipt)
+      setTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
+
+      setLoadingWithdraw(false)
+      console.log('Withdrawn. ✅')
+    } catch (e) {
+      setLoadingDeposit(false)
+      console.log('error:', e)
+    }
+  }
+
   return (
     <>
       <Head />
@@ -160,9 +179,15 @@ export default function Home() {
           </Button>
         )}
 
-        <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
-          Withdraw
-        </Button>
+        {!loadingWithdraw ? (
+          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={withdraw}>
+            Withdraw
+          </Button>
+        ) : (
+          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Withdrawing" variant="outline">
+            Withdrawing
+          </Button>
+        )}
 
         <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
           Transfer
