@@ -5,12 +5,16 @@ import { LinkComponent } from '../components/layout/LinkComponent'
 import { useState, useEffect } from 'react'
 import { useFeeData, useSigner, useAccount, useBalance, useNetwork } from 'wagmi'
 import { ethers } from 'ethers'
-import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '../lib/consts'
+import { GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI } from '../lib/consts'
 import useSound from 'use-sound' // https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
 const stevie = 'https://bafybeicxvrehw23nzkwjcxvsytimqj2wos7dhh4evrv5kscbbj6agilcsy.ipfs.w3s.link/another-star.mp3'
 
 export default function Home() {
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loadingMint, setLoadingMint] = useState<boolean>(false)
+  const [loadingDeposit, setLoadingDeposit] = useState<boolean>(false)
+  const [loadingWithdraw, setLoadingWithdraw] = useState<boolean>(false)
+  const [loadingTransfer, setLoadingTransfer] = useState<boolean>(false)
+
   const [userBal, setUserBal] = useState<string>('')
   const [txLink, setTxLink] = useState<string>('')
 
@@ -18,6 +22,7 @@ export default function Home() {
   const { address, isConnecting, isDisconnected } = useAccount()
 
   const { data: signer } = useSigner()
+
   const {
     data: bal,
     isError,
@@ -33,7 +38,8 @@ export default function Home() {
 
   const explorerUrl = network.chain?.blockExplorers?.default.url
 
-  const nft = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, signer)
+  const cfa = new ethers.Contract(GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, signer)
+  const eur = new ethers.Contract(EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI, signer)
 
   useEffect(() => {
     const val = Number(bal?.formatted).toFixed(3)
@@ -48,15 +54,56 @@ export default function Home() {
   const mint = async () => {
     console.log('minting...')
     try {
-      setLoading(true)
-      const call = await nft.safeMint()
-      const nftReceipt = await call.wait(1)
-      console.log('tx:', nftReceipt)
-      setTxLink(explorerUrl + '/tx/' + nftReceipt.transactionHash)
-      setLoading(false)
-      play()
+      setLoadingMint(true)
+      setTxLink('')
+      const mint = await eur.mint(ethers.utils.parseEther('1'))
+      const mintReceipt = await mint.wait(1)
+      console.log('tx:', mintReceipt)
+      setTxLink(explorerUrl + '/tx/' + mintReceipt.transactionHash)
+      setLoadingMint(false)
+      console.log('Minted. ✅')
+      // play()
     } catch (e) {
-      setLoading(false)
+      setLoadingMint(false)
+      console.log('error:', e)
+    }
+  }
+
+  const deposit = async () => {
+    console.log('Depositing...')
+    try {
+      setTxLink('')
+      setLoadingDeposit(true)
+      const approveTx = await eur.approve(cfa.address, ethers.utils.parseEther('1'))
+      const approveReceipt = await approveTx.wait(1)
+      console.log('tx:', approveReceipt)
+
+      console.log('GCFA_CONTRACT_ADDRESS:', GCFA_CONTRACT_ADDRESS)
+      console.log('GCFA_CONTRACT_ABI:', GCFA_CONTRACT_ABI)
+      console.log('cfa.address:', cfa.address)
+
+      const check = await cfa.name()
+      console.log('check:', check)
+
+      const check2 = await eur.balanceOf(address)
+      console.log('check2 (EUR bal):', check2 / 10 ** 18)
+
+      const deposit = await cfa.depositFor(address, ethers.utils.parseEther('1'))
+      const depositReceipt = await deposit.wait(1)
+      console.log('tx:', depositReceipt)
+      setTxLink(explorerUrl + '/tx/' + depositReceipt.transactionHash)
+
+      const check3 = await cfa.balanceOf(address)
+      console.log('check3 (CFA bal):', check3 / 10 ** 18)
+
+      const check4 = await eur.balanceOf(address)
+      console.log('check4 (EUR bal):', check4 / 10 ** 18)
+
+      setLoadingDeposit(false)
+      console.log('Deposited. ✅')
+      // play()
+    } catch (e) {
+      setLoadingDeposit(false)
       console.log('error:', e)
     }
   }
@@ -66,45 +113,60 @@ export default function Home() {
       <Head />
 
       <main>
-        <Heading as="h2">Basic Minter</Heading>
+        <Heading as="h2">gCFA App</Heading>
         <br />
-        <p>Welcome to Basic Minter!</p>
+        <p>Welcome to gCFA App!</p>
 
         {isDisconnected ? (
           <>
             <br />
-            <p>Please connect your wallet if you want to mint.</p>
+            <p>Please connect your wallet.</p>
           </>
         ) : (
           <>
             <br />
 
-            <p>You&apos;re about to mint 1 NFT on Ethereum Goerli Testnet.</p>
+            <p>
+              You can deposit your EURe to get the equivalent in gCFA, you can withdraw your gCFA and get your EURe back, and you also can do a simple
+              transfer.
+            </p>
             <br />
             <p>
-              You&apos;re connected to <strong>Ethereum Goerli Testnet</strong> and your wallet currently holds
-              <strong> {userBal}</strong>. You can go ahead and click on the &apos;Mint&apos; button below: you will be invited to sign your
-              transaction.{' '}
+              You&apos;re connected to <strong>{network.chain?.name}</strong> and your wallet currently holds
+              <strong> {userBal}</strong>. You can go ahead and click on the &apos;Deposit&apos; button below: you will be invited to sign 2
+              transactions.{' '}
             </p>
           </>
         )}
 
         <br />
-        {!loading ? (
-          !txLink ? (
-            <Button colorScheme="green" variant="outline" onClick={mint}>
-              Mint
-            </Button>
-          ) : (
-            <Button disabled colorScheme="green" variant="outline" onClick={mint}>
-              Mint
-            </Button>
-          )
+
+        {!loadingMint ? (
+          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
+            Mint EUR
+          </Button>
         ) : (
-          <Button isLoading colorScheme="green" loadingText="Minting" variant="outline">
-            Mint
+          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Minting" variant="outline">
+            Minting
           </Button>
         )}
+        {!loadingDeposit ? (
+          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={deposit}>
+            Deposit
+          </Button>
+        ) : (
+          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Depositing" variant="outline">
+            Depositing
+          </Button>
+        )}
+
+        <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
+          Withdraw
+        </Button>
+
+        <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
+          Transfer
+        </Button>
 
         {txLink && (
           <>
@@ -119,11 +181,11 @@ export default function Home() {
         )}
         <br />
         <br />
-        {txLink && (
+        {/* {txLink && (
           <Button colorScheme="red" variant="outline" onClick={() => stop()}>
             Stop the music
           </Button>
-        )}
+        )} */}
         {/* <Image height="800" width="800" alt="contract-image" src="/thistle-contract-feb-15-2023.png" /> */}
       </main>
     </>
