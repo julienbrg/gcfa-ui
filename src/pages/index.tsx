@@ -122,7 +122,26 @@ export default function Home() {
       setLoadingWithdraw(false)
       console.log('Withdrawn. ✅')
     } catch (e) {
-      setLoadingDeposit(false)
+      setLoadingWithdraw(false)
+      console.log('error:', e)
+    }
+  }
+
+  const transfer = async () => {
+    console.log('Transfering...')
+    try {
+      setTxLink('')
+      setLoadingTransfer(true)
+
+      const withdraw = await cfa.transfer(address, ethers.utils.parseEther('500'))
+      const withdrawReceipt = await withdraw.wait(1)
+      console.log('tx:', withdrawReceipt)
+      setTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
+
+      setLoadingTransfer(false)
+      console.log('500 units transferred. ✅')
+    } catch (e) {
+      setLoadingTransfer(false)
       console.log('error:', e)
     }
   }
@@ -189,9 +208,15 @@ export default function Home() {
           </Button>
         )}
 
-        <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
-          Transfer
-        </Button>
+        {!loadingTransfer ? (
+          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={transfer}>
+            Transfer
+          </Button>
+        ) : (
+          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Transferring" variant="outline">
+            Transferring
+          </Button>
+        )}
 
         {txLink && (
           <>
