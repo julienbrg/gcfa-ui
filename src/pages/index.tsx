@@ -1,6 +1,6 @@
 import { Heading, Button } from '@chakra-ui/react'
 import { Head } from '../components/layout/Head'
-// import Image from 'next/image'
+import Image from 'next/image'
 import { LinkComponent } from '../components/layout/LinkComponent'
 import { useState, useEffect } from 'react'
 import { useFeeData, useSigner, useAccount, useBalance, useNetwork } from 'wagmi'
@@ -236,7 +236,7 @@ export default function Home() {
             Stop the music
           </Button>
         )} */}
-        {/* <Image height="800" width="800" alt="contract-image" src="/thistle-contract-feb-15-2023.png" /> */}
+        <Image height="800" width="1000" alt="contract-image" src="/gcfa-code.png" />
       </main>
     </>
   )
