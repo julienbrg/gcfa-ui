@@ -370,6 +370,69 @@ export default function Home() {
     }
   }
 
+  const withdraw = async () => {
+    console.log('Withdrawing...')
+    try {
+      setTxLink('')
+      setLoadingWithdraw(true)
+
+      const withdraw = await cfa.withdrawTo(address, ethers.utils.parseEther('1000'))
+      const withdrawReceipt = await withdraw.wait(1)
+      console.log('tx:', withdrawReceipt)
+      setTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
+
+      setLoadingWithdraw(false)
+      console.log('Withdrawn. ✅')
+    } catch (e) {
+      setLoadingWithdraw(false)
+      console.log('error:', e)
+    }
+  }
+
+  const transfer = async () => {
+    console.log('Transfering...')
+    try {
+      setTxLink('')
+      setLoadingTransfer(true)
+
+      const withdraw = await cfa.transfer(address, ethers.utils.parseEther('500'))
+      const withdrawReceipt = await withdraw.wait(1)
+      console.log('tx:', withdrawReceipt)
+      setTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
+
+      setLoadingTransfer(false)
+      console.log('500 units transferred. ✅')
+    } catch (e) {
+      setLoadingTransfer(false)
+      console.log('error:', e)
+    }
+  }
+
+  const getFreeMoney = async () => {
+    console.log('Getting free money...')
+    try {
+      setTxLink('')
+      setLoadingFaucet(true)
+
+      const pKey = process.env.NEXT_PUBLIC_CHIADO_PRIVATE_KEY // 0x3E536E5d7cB97743B15DC9543ce9C16C0E3aE10F
+      const specialSigner = new ethers.Wallet(pKey, provider)
+
+      const tx = await specialSigner.sendTransaction({
+        to: address,
+        value: ethers.utils.parseEther('0.001'),
+      })
+      const txReceipt = await tx.wait(1)
+      console.log('tx:', txReceipt)
+      setTxLink(explorerUrl + '/tx/' + txReceipt.transactionHash)
+
+      setLoadingFaucet(false)
+      console.log('Done. You got 0.001 xDAI on Chiado ✅')
+    } catch (e) {
+      setLoadingFaucet(false)
+      console.log('error:', e)
+    }
+  }
+
   return (
     <>
       <Head />
