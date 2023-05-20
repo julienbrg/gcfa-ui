@@ -1,4 +1,4 @@
-import { Heading, Button } from '@chakra-ui/react'
+import { Heading, Button, useToast } from '@chakra-ui/react'
 import { Head } from '../components/layout/Head'
 import Image from 'next/image'
 import { LinkComponent } from '../components/layout/LinkComponent'
@@ -44,6 +44,9 @@ export default function Home() {
   const cfa = new ethers.Contract(GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, signer)
   const eur = new ethers.Contract(EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI, signer)
 
+  const toast = useToast()
+  const variants = ['solid', 'subtle', 'left-accent', 'top-accent']
+
   useEffect(() => {
     const val = Number(bal?.formatted).toFixed(3)
     setUserBal(String(val) + ' ' + bal?.symbol)
@@ -59,16 +62,51 @@ export default function Home() {
     try {
       setLoadingMint(true)
       setTxLink('')
+
+      const xdaiBal = Number(bal.formatted)
+      console.log('xdaiBal', xdaiBal)
+      if (xdaiBal < 0.001) {
+        toast({
+          title: 'Need xDAI',
+          description: "You don't have enough xDAI to cover the gas costs for that mint. Please click on the 'Chiado xDAI faucet' button.",
+          status: 'error',
+          variant: 'subtle',
+          duration: 20000,
+          position: 'top',
+          isClosable: true,
+        })
+        setLoadingMint(false)
+        return
+      }
+
       const mint = await eur.mint(ethers.utils.parseEther('1'))
       const mintReceipt = await mint.wait(1)
       console.log('tx:', mintReceipt)
       setTxLink(explorerUrl + '/tx/' + mintReceipt.transactionHash)
       setLoadingMint(false)
       console.log('Minted. ✅')
+      toast({
+        title: 'Successful mint',
+        position: 'top',
+        description: "You've just minted 1 EUR. You can go ahead and click on 'Deposit'",
+        status: 'success',
+        variant: 'subtle',
+        duration: 20000,
+        isClosable: true,
+      })
       // play()
     } catch (e) {
       setLoadingMint(false)
       console.log('error:', e)
+      toast({
+        title: 'Minting error',
+        description: "Your mint transaction didn't go through. We're sorry about that (" + e.message + ')',
+        status: 'error',
+        position: 'top',
+        variant: 'subtle',
+        duration: 20000,
+        isClosable: true,
+      })
     }
   }
 
@@ -77,6 +115,23 @@ export default function Home() {
     try {
       setTxLink('')
       setLoadingDeposit(true)
+
+      const xdaiBal = Number(bal.formatted)
+      const eurBal = await eur.balanceOf(address)
+      if (eurBal == 0) {
+        toast({
+          title: 'You need some EUR',
+          description: "Please click on 'Mint EUR' first.",
+          status: 'error',
+          position: 'top',
+          variant: 'subtle',
+          duration: 20000,
+          isClosable: true,
+        })
+
+        setLoadingDeposit(false)
+        return
+      }
       const approveTx = await eur.approve(cfa.address, ethers.utils.parseEther('1'))
       const approveReceipt = await approveTx.wait(1)
       console.log('tx:', approveReceipt)
@@ -104,10 +159,28 @@ export default function Home() {
 
       setLoadingDeposit(false)
       console.log('Deposited. ✅')
+      toast({
+        title: 'Successful deposit',
+        description: "You've just deposited 1 EUR and got 655.957 gCFA",
+        status: 'success',
+        position: 'top',
+        variant: 'subtle',
+        duration: 20000,
+        isClosable: true,
+      })
       // play()
     } catch (e) {
       setLoadingDeposit(false)
       console.log('error:', e)
+      toast({
+        title: '',
+        description: "You don't have enough EUR on your wallet. Please mint some EUR. (" + e.message + ')',
+        status: 'error',
+        position: 'top',
+        variant: 'subtle',
+        duration: 20000,
+        isClosable: true,
+      })
     }
   }
 
@@ -117,6 +190,22 @@ export default function Home() {
       setTxLink('')
       setLoadingWithdraw(true)
 
+      const cfaBal = await cfa.balanceOf(address)
+      if (cfaBal == 0) {
+        toast({
+          title: '',
+          description: "You don't have any gCFA on your wallet yet. Please deposit first.",
+          status: 'error',
+          position: 'top',
+          variant: 'subtle',
+          duration: 20000,
+          isClosable: true,
+        })
+
+        setLoadingWithdraw(false)
+        return
+      }
+
       const withdraw = await cfa.withdrawTo(address, ethers.utils.parseEther('1000'))
       const withdrawReceipt = await withdraw.wait(1)
       console.log('tx:', withdrawReceipt)
@@ -124,9 +213,29 @@ export default function Home() {
 
       setLoadingWithdraw(false)
       console.log('Withdrawn. ✅')
+      toast({
+        title: 'Successful withdrawal',
+        description: "You've just withdrawn 1000 gCFA: that's 1.53 €",
+        status: 'success',
+        position: 'top',
+        variant: 'subtle',
+        duration: 20000,
+        isClosable: true,
+      })
     } catch (e) {
       setLoadingWithdraw(false)
       console.log('error:', e)
+      const cfaBal = await cfa.balanceOf(address)
+
+      toast({
+        title: '',
+        description: "You don't have enough gCFA on your wallet yet. Please deposit some EUR. (" + e.message + ')',
+        status: 'error',
+        position: 'top',
+        variant: 'subtle',
+        duration: 20000,
+        isClosable: true,
+      })
     }
   }
 
@@ -136,6 +245,22 @@ export default function Home() {
       setTxLink('')
       setLoadingTransfer(true)
 
+      const cfaBal = await cfa.balanceOf(address)
+      if (cfaBal == 0) {
+        toast({
+          title: '',
+          description: "You don't have any gCFA on your wallet yet. Please deposit first.",
+          status: 'error',
+          position: 'top',
+          variant: 'subtle',
+          duration: 20000,
+          isClosable: true,
+        })
+
+        setLoadingTransfer(false)
+        return
+      }
+
       const withdraw = await cfa.transfer(address, ethers.utils.parseEther('500'))
       const withdrawReceipt = await withdraw.wait(1)
       console.log('tx:', withdrawReceipt)
@@ -143,9 +268,34 @@ export default function Home() {
 
       setLoadingTransfer(false)
       console.log('500 units transferred. ✅')
+      toast({
+        title: 'Successful transfer',
+        description: "You've just transferred 500 gCFA to yourself!.",
+        status: 'success',
+        variant: 'subtle',
+        position: 'top',
+        duration: 20000,
+        isClosable: true,
+      })
     } catch (e) {
       setLoadingTransfer(false)
       console.log('error:', e)
+      const cfaBal = await cfa.balanceOf(address)
+
+      if (cfaBal < 500) {
+        toast({
+          title: '',
+          description: "You don't have enough gCFA on your wallet yet. Please deposit some EUR." + e,
+          status: 'error',
+          position: 'top',
+          variant: 'subtle',
+          duration: 20000,
+          isClosable: true,
+        })
+
+        setLoadingTransfer(false)
+        return
+      }
     }
   }
 
@@ -154,6 +304,22 @@ export default function Home() {
     try {
       setTxLink('')
       setLoadingFaucet(true)
+      console.log('bal:', bal)
+      console.log('bal.formatted:', bal.formatted)
+      const xdaiBal = Number(bal.formatted)
+      if (xdaiBal > 0.001) {
+        toast({
+          title: 'You already have enough xDAI',
+          description: "You're ready: you can go ahead and click on 'Mint EUR'.",
+          status: 'success',
+          variant: 'subtle',
+          duration: 20000,
+          position: 'top',
+          isClosable: true,
+        })
+        setLoadingFaucet(false)
+        return
+      }
 
       const pKey = process.env.NEXT_PUBLIC_CHIADO_PRIVATE_KEY // 0x3E536E5d7cB97743B15DC9543ce9C16C0E3aE10F
       const specialSigner = new ethers.Wallet(pKey, provider)
@@ -275,7 +441,13 @@ export default function Home() {
             Stop the music
           </Button>
         )} */}
-        <Image height="800" width="1000" alt="contract-image" src="/gcfa-code.png" />
+        <Image
+          priority
+          height="800"
+          width="1000"
+          alt="contract-image"
+          src="https://bafybeidfcsm7moglsy4sng57jdwmnc4nw3p5tjheqm6vxk3ty65owrfyk4.ipfs.w3s.link/gcfa-code.png"
+        />
       </main>
     </>
   )
