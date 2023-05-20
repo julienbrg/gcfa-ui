@@ -1,4 +1,4 @@
-import { Heading, Button, useToast } from '@chakra-ui/react'
+import { Heading, Button, useToast, FormControl, FormLabel, FormHelperText, Input, Text } from '@chakra-ui/react'
 import { Head } from '../components/layout/Head'
 import Image from 'next/image'
 import { LinkComponent } from '../components/layout/LinkComponent'
@@ -17,15 +17,24 @@ export default function Home() {
   const { address, isConnecting, isDisconnected } = useAccount()
 
   const [loadingMint, setLoadingMint] = useState<boolean>(false)
+  const [mintTxLink, setMintTxLink] = useState<string>('')
   const [loadingDeposit, setLoadingDeposit] = useState<boolean>(false)
+  const [depositTxLink, setDepositTxLink] = useState<string>('')
   const [loadingWithdraw, setLoadingWithdraw] = useState<boolean>(false)
+  const [withdrawTxLink, setWithdrawTxLink] = useState<string>('')
   const [loadingTransfer, setLoadingTransfer] = useState<boolean>(false)
+  const [transferTxLink, setTransferTxLink] = useState<string>('')
   const [loadingFaucet, setLoadingFaucet] = useState<boolean>(false)
+  const [faucetTxLink, setFaucetTxLink] = useState<string>('')
   const [cfaBal, setCfaBal] = useState<number>(0)
   const [eurBal, setEurBal] = useState<number>(0)
+  const [eurAmount, setEurAmount] = useState<string>('1')
+  const [depositAmount, setDepositAmount] = useState<string>('1')
+  const [amountToWithdraw, setAmountToWithdraw] = useState<string>('1000')
+  const [recipientAddress, setRecipientAddress] = useState<string>(address)
+  const [transferAmount, setTransferAmount] = useState<string>('500')
 
   const [userBal, setUserBal] = useState<string>('')
-  const [txLink, setTxLink] = useState<string>('')
 
   const { data } = useFeeData()
 
@@ -74,14 +83,14 @@ export default function Home() {
     console.log('minting...')
     try {
       setLoadingMint(true)
-      setTxLink('')
+      setMintTxLink('')
 
       const xdaiBal = Number(bal.formatted)
       console.log('xdaiBal', xdaiBal)
       if (xdaiBal < 0.00007) {
         toast({
           title: 'Need xDAI',
-          description: "You don't have enough xDAI to cover the gas costs for that mint. Please click on the 'Chiado xDAI faucet' button.",
+          description: "You don't have enough xDAI to cover the gas costs for that mint. Please click on the 'Get free xDAI' button.",
           status: 'error',
           variant: 'subtle',
           duration: 20000,
@@ -91,11 +100,10 @@ export default function Home() {
         setLoadingMint(false)
         return
       }
-
-      const mint = await eur.mint(ethers.utils.parseEther('1'))
+      const mint = await eur.mint(ethers.utils.parseEther(eurAmount))
       const mintReceipt = await mint.wait(1)
       console.log('tx:', mintReceipt)
-      setTxLink(explorerUrl + '/tx/' + mintReceipt.transactionHash)
+      setMintTxLink(explorerUrl + '/tx/' + mintReceipt.transactionHash)
       setLoadingMint(false)
       console.log('Minted. ✅')
       toast({
@@ -127,7 +135,7 @@ export default function Home() {
   const deposit = async () => {
     console.log('Depositing...')
     try {
-      setTxLink('')
+      setDepositTxLink('')
       setLoadingDeposit(true)
 
       const xdaiBal = Number(bal.formatted)
@@ -146,7 +154,7 @@ export default function Home() {
         setLoadingDeposit(false)
         return
       }
-      const approveTx = await eur.approve(cfa.address, ethers.utils.parseEther('1'))
+      const approveTx = await eur.approve(cfa.address, ethers.utils.parseEther(depositAmount))
       const approveReceipt = await approveTx.wait(1)
       console.log('tx:', approveReceipt)
 
@@ -160,10 +168,10 @@ export default function Home() {
       const check2 = await eur.balanceOf(address)
       console.log('check2 (EUR bal):', check2 / 10 ** 18)
 
-      const deposit = await cfa.depositFor(address, ethers.utils.parseEther('1'))
+      const deposit = await cfa.depositFor(address, ethers.utils.parseEther(depositAmount))
       const depositReceipt = await deposit.wait(1)
       console.log('tx:', depositReceipt)
-      setTxLink(explorerUrl + '/tx/' + depositReceipt.transactionHash)
+      setDepositTxLink(explorerUrl + '/tx/' + depositReceipt.transactionHash)
 
       const check3 = await cfa.balanceOf(address)
       console.log('check3 (CFA bal):', check3 / 10 ** 18)
@@ -202,7 +210,7 @@ export default function Home() {
   const withdraw = async () => {
     console.log('Withdrawing...')
     try {
-      setTxLink('')
+      setWithdrawTxLink('')
       setLoadingWithdraw(true)
 
       const cfaBal = await cfa.balanceOf(address)
@@ -221,16 +229,16 @@ export default function Home() {
         return
       }
 
-      const withdraw = await cfa.withdrawTo(address, ethers.utils.parseEther('1000'))
+      const withdraw = await cfa.withdrawTo(address, ethers.utils.parseEther(amountToWithdraw))
       const withdrawReceipt = await withdraw.wait(1)
       console.log('tx:', withdrawReceipt)
-      setTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
+      setWithdrawTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
 
       setLoadingWithdraw(false)
       console.log('Withdrawn. ✅')
       toast({
         title: 'Successful withdrawal',
-        description: "You've just withdrawn 1000 gCFA: that's 1.53 €",
+        description: "You've just withdrawn 1000 gCFA",
         status: 'success',
         position: 'top',
         variant: 'subtle',
@@ -258,7 +266,7 @@ export default function Home() {
   const transfer = async () => {
     console.log('Transfering...')
     try {
-      setTxLink('')
+      setTransferTxLink('')
       setLoadingTransfer(true)
 
       const cfaBal = await cfa.balanceOf(address)
@@ -277,10 +285,10 @@ export default function Home() {
         return
       }
 
-      const withdraw = await cfa.transfer(address, ethers.utils.parseEther('500'))
+      const withdraw = await cfa.transfer(recipientAddress, ethers.utils.parseEther(transferAmount))
       const withdrawReceipt = await withdraw.wait(1)
       console.log('tx:', withdrawReceipt)
-      setTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
+      setTransferTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
 
       setLoadingTransfer(false)
       console.log('500 units transferred. ✅')
@@ -319,7 +327,7 @@ export default function Home() {
   const getFreeMoney = async () => {
     console.log('Getting free money...')
     try {
-      setTxLink('')
+      setFaucetTxLink('')
       setLoadingFaucet(true)
 
       console.log('bal:', bal)
@@ -348,7 +356,7 @@ export default function Home() {
       })
       const txReceipt = await tx.wait(1)
       console.log('tx:', txReceipt)
-      setTxLink(explorerUrl + '/tx/' + txReceipt.transactionHash)
+      setFaucetTxLink(explorerUrl + '/tx/' + txReceipt.transactionHash)
 
       const x = await eur.balanceOf(address)
       console.log('x:', Number(x / 10 ** 18))
@@ -367,9 +375,7 @@ export default function Home() {
       <Head />
 
       <main>
-        <Heading as="h2">gCFA App</Heading>
-        <br />
-        <p>Welcome to gCFA App!</p>
+        <p>Welcome to gCFA UI!</p>
 
         {isDisconnected ? (
           <>
@@ -380,14 +386,14 @@ export default function Home() {
           <>
             <br />
             <p>
-              You can deposit your EURe to get the equivalent in gCFA, you can withdraw your gCFA and get your EURe back, and you also can do a simple
+              You can deposit your EUR to get the equivalent in gCFA, you can withdraw your gCFA and get your EUR back, and you also can do a simple
               transfer.
             </p>
             <br />
-            {eurBal || cfaBal ? (
+            {address ? (
               <p>
                 You&apos;re connected to <strong>{network.chain?.name}</strong> and your wallet currently holds
-                <strong> {userBal}</strong>, <strong>{cfaBal.toFixed(0)}</strong> CFA, and <strong>{eurBal}</strong> EUR.{' '}
+                <strong> {userBal}</strong>, <strong>{cfaBal.toFixed(0)}</strong> gCFA, and <strong>{eurBal.toFixed(2)}</strong> EUR.{' '}
               </p>
             ) : (
               <>
@@ -403,69 +409,160 @@ export default function Home() {
         )}
 
         <br />
-
         {!loadingFaucet ? (
           <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={getFreeMoney}>
-            Chiado xDAI faucet
+            Get some free xDAI
           </Button>
         ) : (
           <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Cashing in" variant="outline">
             Cashing in
           </Button>
         )}
-
-        {!loadingMint ? (
-          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
-            Mint EUR
-          </Button>
-        ) : (
-          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Minting" variant="outline">
-            Minting
-          </Button>
-        )}
-
-        {!loadingDeposit ? (
-          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={deposit}>
-            Deposit
-          </Button>
-        ) : (
-          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Depositing" variant="outline">
-            Depositing
-          </Button>
-        )}
-
-        {!loadingWithdraw ? (
-          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={withdraw}>
-            Withdraw
-          </Button>
-        ) : (
-          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Withdrawing" variant="outline">
-            Withdrawing
-          </Button>
-        )}
-
-        {!loadingTransfer ? (
-          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={transfer}>
-            Transfer
-          </Button>
-        ) : (
-          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Transferring" variant="outline">
-            Transferring
-          </Button>
-        )}
-
-        {txLink && (
+        {faucetTxLink ? (
           <>
             <br />
+            <Text fontSize="12px" color="#45a2f8">
+              <LinkComponent target="blank" href={faucetTxLink}>
+                View your faucet tx on Etherscan: <strong>{faucetTxLink}</strong>
+              </LinkComponent>
+            </Text>
+          </>
+        ) : (
+          <>
             <br />
-            <p>Done! You can view your transaction on Etherscan:</p>
-            <br />
-            <LinkComponent target="blank" href={txLink}>
-              {txLink}
-            </LinkComponent>
           </>
         )}
         <br />
+
+        <FormControl>
+          <FormLabel>Mint EUR</FormLabel>
+          <Input value={eurAmount} type="number" onChange={(e) => setEurAmount(e.target.value)} placeholder="Proposal title" />
+          <FormHelperText>How many euros do you want to mint?</FormHelperText>
+
+          <br />
+          {!loadingMint ? (
+            <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
+              Mint EUR
+            </Button>
+          ) : (
+            <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Minting" variant="outline">
+              Minting
+            </Button>
+          )}
+          {mintTxLink ? (
+            <>
+              <br />
+              <Text fontSize="12px" color="#45a2f8">
+                <LinkComponent target="blank" href={mintTxLink}>
+                  View your mint tx on Etherscan: <strong>{mintTxLink}</strong>
+                </LinkComponent>
+              </Text>
+            </>
+          ) : (
+            <>
+              <br />
+            </>
+          )}
+        </FormControl>
+        <br />
+        <FormControl>
+          <FormLabel>Deposit</FormLabel>
+          <Input value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} placeholder="Proposal title" />
+          <FormHelperText>How many euros do you want to deposit?</FormHelperText>
+
+          <br />
+          {!loadingDeposit ? (
+            <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={deposit}>
+              Deposit
+            </Button>
+          ) : (
+            <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Depositing" variant="outline">
+              Depositing
+            </Button>
+          )}
+          {depositTxLink ? (
+            <>
+              <br />
+              <Text fontSize="12px" color="#45a2f8">
+                <LinkComponent target="blank" href={depositTxLink}>
+                  View your deposit tx on Etherscan: <strong>{depositTxLink}</strong>
+                </LinkComponent>
+              </Text>
+            </>
+          ) : (
+            <>
+              <br />
+            </>
+          )}
+        </FormControl>
+
+        <br />
+
+        <FormControl>
+          <FormLabel>Withdraw</FormLabel>
+          <Input value={amountToWithdraw} onChange={(e) => setAmountToWithdraw(e.target.value)} placeholder="Proposal title" />
+          <FormHelperText>How many gCFA do you want to withdraw?</FormHelperText>
+
+          <br />
+          {!loadingWithdraw ? (
+            <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={withdraw}>
+              Withdraw
+            </Button>
+          ) : (
+            <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Withdrawing" variant="outline">
+              Withdrawing
+            </Button>
+          )}
+          {withdrawTxLink ? (
+            <>
+              <br />
+              <Text fontSize="12px" color="#45a2f8">
+                <LinkComponent target="blank" href={withdrawTxLink}>
+                  View your withdraw tx on Etherscan: <strong>{withdrawTxLink}</strong>
+                </LinkComponent>
+              </Text>
+            </>
+          ) : (
+            <>
+              <br />
+            </>
+          )}
+        </FormControl>
+
+        <br />
+        <FormControl>
+          <FormLabel>Transfer gCFA</FormLabel>
+          <Input value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} />
+          <FormHelperText>What&apos;s the recipent address?</FormHelperText>
+          <br />
+          <Input value={transferAmount} onChange={(e) => setTransferAmount(e.target.value)} />
+          <FormHelperText>How many gCFA do you want to transfer?</FormHelperText>
+          <br />
+          {!loadingTransfer ? (
+            <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={transfer}>
+              Transfer
+            </Button>
+          ) : (
+            <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Transferring" variant="outline">
+              Transferring
+            </Button>
+          )}
+          {transferTxLink ? (
+            <>
+              <br />
+              <Text fontSize="12px" color="#45a2f8">
+                <LinkComponent target="blank" href={transferTxLink}>
+                  View your transfer tx on Etherscan: <strong>{transferTxLink}</strong>
+                </LinkComponent>
+              </Text>
+            </>
+          ) : (
+            <>
+              <br />
+            </>
+          )}
+        </FormControl>
+
         <br />
         {/* {txLink && (
           <Button colorScheme="red" variant="outline" onClick={() => stop()}>
