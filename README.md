@@ -1,11 +1,16 @@
-# Another Star
+# gCFA App
 
-This repo was forked from [Nexth](https://github.com/wslyvh/nexth).
+Allows you to get gCFA.
 
-It's a Web3 app boilerplate built with Next.js, Chakra UI, Ethers, Wagmi and ConnectKit.
+You give it EURe (on Gnosischain Mainnet), and you'll get gCFA. Give it gCFA, and you get your EURe back. The rate is fixed (655.957 gCFA per EURe) and cannot be changed.
 
-- Netlify: [https://another-star.netlify.app/](https://another-star.netlify.app/)
-- IPFS: [https://bafybeiaadcgdrw5pulupdykl4bmxayzx3yfqiipy73nvh5rf3rgtun47um.ipfs.w3s.link](https://bafybeiaadcgdrw5pulupdykl4bmxayzx3yfqiipy73nvh5rf3rgtun47um.ipfs.w3s.link)
+## Motivation
+
+The goal is build an interface for gCFA. The most common functions are accessible to anyone: deposit, withdraw, and transfer.
+
+The gCFA on Gnosis is directly pegged to the EURe. 1 EURe = 655.957 gCFA, and 1000 gCFA = 1.53 EURe.
+
+Live at [https://gcfa-ui.on.fleek.co/](https://gcfa-ui.on.fleek.co/)
 
 ## Install
 
@@ -18,6 +23,23 @@ npm i
 ```sh
 npm run dev
 ```
+
+## Latest deployments
+
+- gCFA on Chiado: https://blockscout.chiadochain.net/address/0x425F7D52ca97DA275e2218AB15cdDfE58e424Db2
+
+## Supported networks
+
+- Gnosis Chiado Testnet
+
+## Contribs
+
+- Please create an item in the [gCFA project](https://github.com/orgs/w3hc/projects/5/views/2),
+- then make it an issue (in `gcfa-ui`),
+- then create a branch from that issue,
+- sync it locally or use the codespace,
+- fix the issue,
+- request merge into main.
 
 ## Support
 

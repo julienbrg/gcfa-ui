@@ -1,9 +1,9 @@
 import { Heading, Button } from '@chakra-ui/react'
 import { Head } from '../components/layout/Head'
-// import Image from 'next/image'
+import Image from 'next/image'
 import { LinkComponent } from '../components/layout/LinkComponent'
 import { useState, useEffect } from 'react'
-import { useFeeData, useSigner, useAccount, useBalance, useNetwork } from 'wagmi'
+import { useFeeData, useSigner, useAccount, useBalance, useNetwork, useProvider } from 'wagmi'
 import { ethers } from 'ethers'
 import { GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI } from '../lib/consts'
 import useSound from 'use-sound' // https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
@@ -14,6 +14,7 @@ export default function Home() {
   const [loadingDeposit, setLoadingDeposit] = useState<boolean>(false)
   const [loadingWithdraw, setLoadingWithdraw] = useState<boolean>(false)
   const [loadingTransfer, setLoadingTransfer] = useState<boolean>(false)
+  const [loadingFaucet, setLoadingFaucet] = useState<boolean>(false)
 
   const [userBal, setUserBal] = useState<string>('')
   const [txLink, setTxLink] = useState<string>('')
@@ -32,6 +33,8 @@ export default function Home() {
   })
   const network = useNetwork()
 
+  const provider = useProvider()
+
   const [play, { stop, pause }] = useSound(stevie, {
     volume: 0.5,
   })
@@ -44,7 +47,7 @@ export default function Home() {
   useEffect(() => {
     const val = Number(bal?.formatted).toFixed(3)
     setUserBal(String(val) + ' ' + bal?.symbol)
-  }, [bal?.formatted, bal?.symbol, address])
+  }, [bal?.formatted, bal?.symbol, address, provider])
 
   const checkFees = () => {
     console.log('data?.formatted:', JSON.stringify(data?.formatted))
@@ -108,6 +111,69 @@ export default function Home() {
     }
   }
 
+  const withdraw = async () => {
+    console.log('Withdrawing...')
+    try {
+      setTxLink('')
+      setLoadingWithdraw(true)
+
+      const withdraw = await cfa.withdrawTo(address, ethers.utils.parseEther('1000'))
+      const withdrawReceipt = await withdraw.wait(1)
+      console.log('tx:', withdrawReceipt)
+      setTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
+
+      setLoadingWithdraw(false)
+      console.log('Withdrawn. ✅')
+    } catch (e) {
+      setLoadingWithdraw(false)
+      console.log('error:', e)
+    }
+  }
+
+  const transfer = async () => {
+    console.log('Transfering...')
+    try {
+      setTxLink('')
+      setLoadingTransfer(true)
+
+      const withdraw = await cfa.transfer(address, ethers.utils.parseEther('500'))
+      const withdrawReceipt = await withdraw.wait(1)
+      console.log('tx:', withdrawReceipt)
+      setTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
+
+      setLoadingTransfer(false)
+      console.log('500 units transferred. ✅')
+    } catch (e) {
+      setLoadingTransfer(false)
+      console.log('error:', e)
+    }
+  }
+
+  const getFreeMoney = async () => {
+    console.log('Getting free money...')
+    try {
+      setTxLink('')
+      setLoadingFaucet(true)
+
+      const pKey = process.env.NEXT_PUBLIC_CHIADO_PRIVATE_KEY // 0x3E536E5d7cB97743B15DC9543ce9C16C0E3aE10F
+      const specialSigner = new ethers.Wallet(pKey, provider)
+
+      const tx = await specialSigner.sendTransaction({
+        to: address,
+        value: ethers.utils.parseEther('0.001'),
+      })
+      const txReceipt = await tx.wait(1)
+      console.log('tx:', txReceipt)
+      setTxLink(explorerUrl + '/tx/' + txReceipt.transactionHash)
+
+      setLoadingFaucet(false)
+      console.log('Done. You got 0.001 xDAI on Chiado ✅')
+    } catch (e) {
+      setLoadingFaucet(false)
+      console.log('error:', e)
+    }
+  }
+
   return (
     <>
       <Head />
@@ -141,6 +207,16 @@ export default function Home() {
 
         <br />
 
+        {!loadingFaucet ? (
+          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={getFreeMoney}>
+            Chiado xDAI faucet
+          </Button>
+        ) : (
+          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Cashing in" variant="outline">
+            Cashing in
+          </Button>
+        )}
+
         {!loadingMint ? (
           <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
             Mint EUR
@@ -150,6 +226,7 @@ export default function Home() {
             Minting
           </Button>
         )}
+
         {!loadingDeposit ? (
           <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={deposit}>
             Deposit
@@ -160,13 +237,25 @@ export default function Home() {
           </Button>
         )}
 
-        <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
-          Withdraw
-        </Button>
+        {!loadingWithdraw ? (
+          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={withdraw}>
+            Withdraw
+          </Button>
+        ) : (
+          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Withdrawing" variant="outline">
+            Withdrawing
+          </Button>
+        )}
 
-        <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
-          Transfer
-        </Button>
+        {!loadingTransfer ? (
+          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={transfer}>
+            Transfer
+          </Button>
+        ) : (
+          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Transferring" variant="outline">
+            Transferring
+          </Button>
+        )}
 
         {txLink && (
           <>
@@ -186,7 +275,7 @@ export default function Home() {
             Stop the music
           </Button>
         )} */}
-        {/* <Image height="800" width="800" alt="contract-image" src="/thistle-contract-feb-15-2023.png" /> */}
+        <Image height="800" width="1000" alt="contract-image" src="/gcfa-code.png" />
       </main>
     </>
   )
