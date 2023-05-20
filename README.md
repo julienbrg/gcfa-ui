@@ -32,6 +32,15 @@ npm run dev
 
 - Gnosis Chiado Testnet
 
+## Contribs
+
+- Please create an item in the [gCFA project](https://github.com/orgs/w3hc/projects/5/views/2),
+- then make it an issue (in `gcfa-ui`),
+- then create a branch from that issue,
+- sync it locally or use the codespace,
+- fix the issue,
+- request merge into main.
+
 ## Support
 
 You can contact me via [Element](https://matrix.to/#/@julienbrg:matrix.org), [Telegram](https://t.me/julienbrg), [Twitter](https://twitter.com/julienbrg), [Discord](https://discord.gg/bHKJV3NWUQ), or [LinkedIn](https://www.linkedin.com/in/julienberanger/).
