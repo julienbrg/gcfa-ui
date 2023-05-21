@@ -33,6 +33,7 @@ export default function Home() {
   const [amountToWithdraw, setAmountToWithdraw] = useState<string>('1000')
   const [recipientAddress, setRecipientAddress] = useState<string>(address)
   const [transferAmount, setTransferAmount] = useState<string>('500')
+  const [supply, setSupply] = useState<string>('?')
 
   const [userBal, setUserBal] = useState<string>('')
 
@@ -77,6 +78,16 @@ export default function Home() {
     const y = await cfa.balanceOf(address)
     setCfaBal(Number(y / 10 ** 18))
     console.log('cfa bal:', Number(y / 10 ** 18))
+    getSupply()
+  }
+
+  const getSupply = async () => {
+    const supplyRaw = await cfa.totalSupply()
+    console.log('supplyRaw', supplyRaw)
+    const supply = ethers.utils.formatEther(supplyRaw)
+    setSupply(supply)
+    console.log('setSupply', supply)
+    return supply
   }
 
   const mint = async () => {
@@ -85,21 +96,22 @@ export default function Home() {
       setLoadingMint(true)
       setMintTxLink('')
 
-      const xdaiBal = Number(bal.formatted)
-      console.log('xdaiBal', xdaiBal)
-      if (xdaiBal < 0.00007) {
-        toast({
-          title: 'Need xDAI',
-          description: "You don't have enough xDAI to cover the gas costs for that mint. Please click on the 'Get free xDAI' button.",
-          status: 'error',
-          variant: 'subtle',
-          duration: 20000,
-          position: 'top',
-          isClosable: true,
-        })
-        setLoadingMint(false)
-        return
-      }
+      // const xdaiBal = Number(bal.formatted)
+      // console.log('xdaiBal', xdaiBal)
+      // if (xdaiBal < 0.000001) {
+      //   toast({
+      //     title: 'Need xDAI',
+      //     description: "You don't have enough xDAI to cover the gas costs for that mint. Please click on the 'Get free xDAI' button.",
+      //     status: 'error',
+      //     variant: 'subtle',
+      //     duration: 20000,
+      //     position: 'top',
+      //     isClosable: true,
+      //   })
+      //   setLoadingMint(false)
+      //   return
+      // }
+
       const mint = await eur.mint(ethers.utils.parseEther(eurAmount))
       const mintReceipt = await mint.wait(1)
       console.log('tx:', mintReceipt)
@@ -109,7 +121,7 @@ export default function Home() {
       toast({
         title: 'Successful mint',
         position: 'top',
-        description: "You've just minted 1 EUR. You can go ahead and click on 'Deposit'",
+        description: "You've just minted new euros! You can go ahead and click on 'Deposit'",
         status: 'success',
         variant: 'subtle',
         duration: 20000,
@@ -183,7 +195,7 @@ export default function Home() {
       console.log('Deposited. ✅')
       toast({
         title: 'Successful deposit',
-        description: "You've just deposited 1 EUR and got 655.957 gCFA",
+        description: "You've just deposited EUR. You have more gCFA now! 🎉",
         status: 'success',
         position: 'top',
         variant: 'subtle',
@@ -238,7 +250,7 @@ export default function Home() {
       console.log('Withdrawn. ✅')
       toast({
         title: 'Successful withdrawal',
-        description: "You've just withdrawn 1000 gCFA",
+        description: "You just withdrawn gCFA. You've got some EUR in your pocket",
         status: 'success',
         position: 'top',
         variant: 'subtle',
@@ -291,10 +303,11 @@ export default function Home() {
       setTransferTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
 
       setLoadingTransfer(false)
-      console.log('500 units transferred. ✅')
+      console.log(transferAmount + 'units transferred. ✅')
+      console.log('transferAmount', transferAmount)
       toast({
         title: 'Successful transfer',
-        description: "You've just transferred 500 gCFA to yourself!.",
+        description: "You've just transferred some gCFA! Congrats and thank you.",
         status: 'success',
         variant: 'subtle',
         position: 'top',
@@ -310,7 +323,7 @@ export default function Home() {
       if (cfaBal < 500) {
         toast({
           title: '',
-          description: "You don't have enough gCFA on your wallet yet. Please deposit some EUR." + e,
+          description: 'You dont have enough gCFA on your wallet yet. Please deposit some EUR.' + e,
           status: 'error',
           position: 'top',
           variant: 'subtle',
@@ -333,7 +346,7 @@ export default function Home() {
       console.log('bal:', bal)
       console.log('bal.formatted:', bal.formatted)
       const xdaiBal = Number(bal.formatted)
-      if (xdaiBal > 0.001) {
+      if (xdaiBal >= 0.001) {
         toast({
           title: 'You already have enough xDAI',
           description: "You're ready: you can go ahead and click on 'Mint EUR'.",
@@ -390,11 +403,22 @@ export default function Home() {
               transfer.
             </p>
             <br />
-            {address ? (
-              <p>
-                You&apos;re connected to <strong>{network.chain?.name}</strong> and your wallet currently holds
-                <strong> {userBal}</strong>, <strong>{cfaBal.toFixed(0)}</strong> gCFA, and <strong>{eurBal.toFixed(2)}</strong> EUR.{' '}
-              </p>
+            <p>
+              Contract address: <strong>{GCFA_CONTRACT_ADDRESS}</strong>
+            </p>
+            <br />
+            <p>
+              Current total supply: <strong>{supply}</strong> gCFA
+            </p>
+            <br />
+            {cfaBal || eurBal ? (
+              <>
+                <p>
+                  You&apos;re connected to <strong>{network.chain?.name}</strong> and your wallet currently holds
+                  <strong> {userBal}</strong>, <strong>{cfaBal.toFixed(0)}</strong> gCFA, and <strong>{eurBal.toFixed(2)}</strong> EUR.{' '}
+                </p>
+                <br />
+              </>
             ) : (
               <>
                 <p>
