@@ -397,7 +397,18 @@ export default function Dao() {
       <Head />
 
       <main>
-        <p>Do you DAO?</p>
+        <Heading as="h1" size="md">
+          DAO activity
+        </Heading>
+        <br />
+        <p>Do you DAO? </p>
+        <br />
+        <Text fontSize="12px" color="#45a2f8">
+          <LinkComponent target="blank" href={'https://github.com/w3hc/gcfa-ui/issues'}>
+            If you want to this built, join the fun on Github!
+          </LinkComponent>
+        </Text>
+        <br />
       </main>
     </>
   )

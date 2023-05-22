@@ -9,7 +9,7 @@ import { GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, EURM_CONTRACT_ADDRESS, EURM_C
 import useSound from 'use-sound' // https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
 const stevie = 'https://bafybeicxvrehw23nzkwjcxvsytimqj2wos7dhh4evrv5kscbbj6agilcsy.ipfs.w3s.link/another-star.mp3'
 
-export default function Nfts() {
+export default function Dex() {
   const { data: signer } = useSigner()
 
   const cfa = new ethers.Contract(GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, signer)
@@ -397,7 +397,19 @@ export default function Nfts() {
       <Head />
 
       <main>
-        <p>Hello DEX</p>
+        <Heading as="h1" size="md">
+          Buy or sell gCFA with Uniswap v3 (?)
+        </Heading>
+        <p></p>
+        <br />
+        <Text fontSize="12px" color="#45a2f8">
+          <LinkComponent target="blank" href={'https://github.com/w3hc/gcfa-ui/issues'}>
+            If you want to this built, join the fun on Github!
+          </LinkComponent>
+        </Text>
+        {/* <Image priority height="30" width="30" alt="contract-image" src="./uniswap-v3-logo.png" /> */}
+
+        <br />
       </main>
     </>
   )

@@ -1,6 +1,6 @@
-import { Heading, Button, useToast, FormControl, FormLabel, FormHelperText, Input, Text } from '@chakra-ui/react'
+import { Heading, Button, useToast, FormControl, FormLabel, FormHelperText, Input, Text, Image } from '@chakra-ui/react'
 import { Head } from '../components/layout/Head'
-import Image from 'next/image'
+// import Image from 'next/image'
 import { LinkComponent } from '../components/layout/LinkComponent'
 import { useState, useEffect } from 'react'
 import { useFeeData, useSigner, useAccount, useBalance, useNetwork, useProvider } from 'wagmi'
@@ -502,7 +502,6 @@ export default function Home() {
           <FormLabel>Deposit</FormLabel>
           <Input value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} placeholder="Proposal title" />
           <FormHelperText>How many euros do you want to deposit?</FormHelperText>
-
           <br />
           {!loadingDeposit ? (
             <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={deposit}>
@@ -513,6 +512,10 @@ export default function Home() {
               Depositing
             </Button>
           )}
+          <br />
+          <br />
+          <Image borderRadius="full" boxSize="500px" src="https://media.giphy.com/media/l378wcSfS7eXWQgla/giphy.gif" alt="gif" />
+          <br />
           {depositTxLink ? (
             <>
               <br />
@@ -595,20 +598,7 @@ export default function Home() {
             </>
           )}
         </FormControl>
-
         <br />
-        {/* {txLink && (
-          <Button colorScheme="red" variant="outline" onClick={() => stop()}>
-            Stop the music
-          </Button>
-        )} */}
-        <Image
-          priority
-          height="800"
-          width="1000"
-          alt="contract-image"
-          src="https://bafybeidfcsm7moglsy4sng57jdwmnc4nw3p5tjheqm6vxk3ty65owrfyk4.ipfs.w3s.link/gcfa-code.png"
-        />
       </main>
     </>
   )

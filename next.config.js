@@ -15,6 +15,16 @@ const nextConfig = {
       },
     ],
   },
+  output: 'export',
+  trailingSlash: true,
+  exportPathMap: function () {
+    return {
+      '/': { page: '/' },
+      '/dex': { page: '/dex' },
+      '/nfts': { page: '/nfts' },
+      '/dao': { page: '/dao' },
+    }
+  },
 }
 
 module.exports = nextConfig

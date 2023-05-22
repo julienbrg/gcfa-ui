@@ -397,7 +397,24 @@ export default function Nfts() {
       <Head />
 
       <main>
-        <p>NFTs</p>
+        <Heading as="h1" size="md">
+          Create an &apos;NFT bank note&apos; with Minifolio (?)
+        </Heading>
+        <p></p>
+        <br />
+        <p>
+          If you want to this built,{' '}
+          <LinkComponent target="blank" href={mintTxLink}>
+            join the fun on Github!
+          </LinkComponent>
+          {/* <Image priority height="30" width="30" alt="gcfa-banknote" src="./gcfa-banknote.png" /> */}
+        </p>
+        <br />
+        <Text fontSize="12px" color="#45a2f8">
+          <LinkComponent target="blank" href={'https://github.com/w3hc/gcfa-ui/issues'}>
+            If you want to this built, join the fun on Github!
+          </LinkComponent>
+        </Text>
       </main>
     </>
   )
