@@ -404,7 +404,10 @@ export default function Home() {
             </p>
             <br />
             <p>
-              Contract address: <strong>{GCFA_CONTRACT_ADDRESS}</strong>
+              Contract address:{' '}
+              <LinkComponent target="blank" href={`https://blockscout.chiadochain.net/address/${GCFA_CONTRACT_ADDRESS}`}>
+                <strong>{GCFA_CONTRACT_ADDRESS}</strong>
+              </LinkComponent>
             </p>
             <br />
             <p>
@@ -555,7 +558,17 @@ export default function Home() {
 
         <br />
         <FormControl>
-          <FormLabel>Transfer gCFA</FormLabel>
+          <FormLabel>
+            Transfer gCFA
+            <Text fontSize="10px">
+              (You currently have{' '}
+              <LinkComponent target="blank" href={`https://blockscout.chiadochain.net/address/${address}/tokens#address-tabs`}>
+                <strong>{cfaBal.toFixed(0)}</strong>
+              </LinkComponent>{' '}
+              gCFA on your wallet)
+            </Text>
+          </FormLabel>
+
           <Input value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} />
           <FormHelperText>What&apos;s the recipent address?</FormHelperText>
           <br />
