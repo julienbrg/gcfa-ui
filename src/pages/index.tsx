@@ -63,6 +63,31 @@ export default function Home() {
     setUserBal(String(val) + ' ' + bal?.symbol)
   }, [bal?.formatted, bal?.symbol, address, provider])
 
+  const addTokenToMetaMask = async () => {
+    try {
+      const wasAdded = await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: GCFA_CONTRACT_ADDRESS,
+            symbol: 'gCFA',
+            decimals: 18,
+            image: '',
+          },
+        },
+      })
+
+      if (wasAdded) {
+        console.log('gCFA Added to MetaMask!')
+      } else {
+        console.log("There was an error, we couldn't add the gCFA token to MetaMask")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const checkFees = () => {
     console.log('data?.formatted:', JSON.stringify(data?.formatted))
     return JSON.stringify(data?.formatted)
@@ -408,6 +433,10 @@ export default function Home() {
               <LinkComponent target="blank" href={`https://blockscout.chiadochain.net/address/${GCFA_CONTRACT_ADDRESS}`}>
                 <strong>{GCFA_CONTRACT_ADDRESS}</strong>
               </LinkComponent>
+              <br />
+              <Button size="xs" mr={3} mb={3} mt={2} colorScheme="blue" variant="outline" onClick={() => addTokenToMetaMask()}>
+                Add gCFA to MetaMask
+              </Button>
             </p>
             <br />
             <p>
@@ -425,8 +454,9 @@ export default function Home() {
             ) : (
               <>
                 <p>
-                  You&apos;re connected to <strong>{network.chain?.name}</strong>{' '}
-                  <Button size="xs" mr={3} mb={3} colorScheme="blue" variant="outline" onClick={() => getBalances()}>
+                  You&apos;re connected to <strong>{network.chain?.name}</strong>
+                  <br />
+                  <Button size="xs" mr={3} mb={3} mt={2} colorScheme="blue" variant="outline" onClick={() => getBalances()}>
                     Get balances
                   </Button>
                 </p>
@@ -499,9 +529,11 @@ export default function Home() {
 
           <br />
           {!loadingDeposit ? (
-            <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={deposit}>
-              Deposit
-            </Button>
+            <>
+              <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={deposit}>
+                Deposit
+              </Button>
+            </>
           ) : (
             <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Depositing" variant="outline">
               Depositing
