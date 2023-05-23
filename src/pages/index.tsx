@@ -150,7 +150,6 @@ export default function Home() {
       setDepositTxLink('')
       setLoadingDeposit(true)
 
-      const xdaiBal = Number(bal.formatted)
       const eurBal = await eur.balanceOf(address)
       if (eurBal == 0) {
         toast({
@@ -508,14 +507,17 @@ export default function Home() {
               Deposit
             </Button>
           ) : (
-            <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Depositing" variant="outline">
-              Depositing
-            </Button>
+            <>
+              <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Depositing" variant="outline">
+                Depositing
+              </Button>
+              <br />
+              <Image borderRadius="full" boxSize="500px" src="https://media.giphy.com/media/l378wcSfS7eXWQgla/giphy.gif" alt="gif" />
+              <br />
+            </>
           )}
           <br />
-          <br />
-          <Image borderRadius="full" boxSize="500px" src="https://media.giphy.com/media/l378wcSfS7eXWQgla/giphy.gif" alt="gif" />
-          <br />
+
           {depositTxLink ? (
             <>
               <br />
