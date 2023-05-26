@@ -1,6 +1,6 @@
-import { Heading, Button, useToast, FormControl, FormLabel, FormHelperText, Input, Text } from '@chakra-ui/react'
+import { Heading, Button, useToast, FormControl, FormLabel, FormHelperText, Input, Text, Image } from '@chakra-ui/react'
 import { Head } from '../components/layout/Head'
-import Image from 'next/image'
+// import Image from 'next/image'
 import { LinkComponent } from '../components/layout/LinkComponent'
 import { useState, useEffect } from 'react'
 import { useFeeData, useSigner, useAccount, useBalance, useNetwork, useProvider } from 'wagmi'
@@ -150,7 +150,6 @@ export default function Home() {
       setDepositTxLink('')
       setLoadingDeposit(true)
 
-      const xdaiBal = Number(bal.formatted)
       const eurBal = await eur.balanceOf(address)
       if (eurBal == 0) {
         toast({
@@ -209,7 +208,7 @@ export default function Home() {
       console.log('error:', e)
       toast({
         title: '',
-        description: "You don't have enough EUR on your wallet. Please mint some EUR. (" + e.message + ')',
+        description: 'There was an error, worry about that. (' + e.message + ')',
         status: 'error',
         position: 'top',
         variant: 'subtle',
@@ -281,21 +280,21 @@ export default function Home() {
       setTransferTxLink('')
       setLoadingTransfer(true)
 
-      const cfaBal = await cfa.balanceOf(address)
-      if (cfaBal == 0) {
-        toast({
-          title: '',
-          description: "You don't have any gCFA on your wallet yet. Please deposit first.",
-          status: 'error',
-          position: 'top',
-          variant: 'subtle',
-          duration: 20000,
-          isClosable: true,
-        })
+      // const cfaBal = await cfa.balanceOf(address)
+      // if (cfaBal == 0) {
+      //   toast({
+      //     title: '',
+      //     description: "You don't have any gCFA on your wallet yet. Please deposit first.",
+      //     status: 'error',
+      //     position: 'top',
+      //     variant: 'subtle',
+      //     duration: 20000,
+      //     isClosable: true,
+      //   })
 
-        setLoadingTransfer(false)
-        return
-      }
+      //   setLoadingTransfer(false)
+      //   return
+      // }
 
       const withdraw = await cfa.transfer(recipientAddress, ethers.utils.parseEther(transferAmount))
       const withdrawReceipt = await withdraw.wait(1)
@@ -320,10 +319,10 @@ export default function Home() {
       console.log('error:', e)
       const cfaBal = await cfa.balanceOf(address)
 
-      if (cfaBal < 500) {
+      if (cfaBal < transferAmount) {
         toast({
           title: '',
-          description: 'You dont have enough gCFA on your wallet yet. Please deposit some EUR.' + e,
+          description: 'You dont have enough gCFA on your wallet yet. Please deposit some EUR.',
           status: 'error',
           position: 'top',
           variant: 'subtle',
@@ -344,12 +343,12 @@ export default function Home() {
       setLoadingFaucet(true)
 
       console.log('bal:', bal)
-      console.log('bal.formatted:', bal.formatted)
+      console.log('bal.formatted:', Number(bal.formatted))
       const xdaiBal = Number(bal.formatted)
       if (xdaiBal >= 0.001) {
         toast({
           title: 'You already have enough xDAI',
-          description: "You're ready: you can go ahead and click on 'Mint EUR'.",
+          description: "You're good to go: you can click on 'Mint EUR'.",
           status: 'success',
           variant: 'subtle',
           duration: 20000,
@@ -377,6 +376,15 @@ export default function Home() {
       setLoadingFaucet(false)
       console.log('Done. You got 0.001 xDAI on Chiado ✅')
       getBalances()
+      toast({
+        title: 'Successful transfer',
+        description: 'You got 0.001 xDAI on Chiado Testnet ✅',
+        status: 'success',
+        variant: 'subtle',
+        position: 'top',
+        duration: 20000,
+        isClosable: true,
+      })
     } catch (e) {
       setLoadingFaucet(false)
       console.log('error:', e)
@@ -493,17 +501,23 @@ export default function Home() {
           <FormLabel>Deposit</FormLabel>
           <Input value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} placeholder="Proposal title" />
           <FormHelperText>How many euros do you want to deposit?</FormHelperText>
-
           <br />
           {!loadingDeposit ? (
             <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={deposit}>
               Deposit
             </Button>
           ) : (
-            <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Depositing" variant="outline">
-              Depositing
-            </Button>
+            <>
+              <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Depositing" variant="outline">
+                Depositing
+              </Button>
+              <br />
+              <Image borderRadius="full" boxSize="500px" src="https://media.giphy.com/media/l378wcSfS7eXWQgla/giphy.gif" alt="gif" />
+              <br />
+            </>
           )}
+          <br />
+
           {depositTxLink ? (
             <>
               <br />
@@ -586,20 +600,7 @@ export default function Home() {
             </>
           )}
         </FormControl>
-
         <br />
-        {/* {txLink && (
-          <Button colorScheme="red" variant="outline" onClick={() => stop()}>
-            Stop the music
-          </Button>
-        )} */}
-        <Image
-          priority
-          height="800"
-          width="1000"
-          alt="contract-image"
-          src="https://bafybeidfcsm7moglsy4sng57jdwmnc4nw3p5tjheqm6vxk3ty65owrfyk4.ipfs.w3s.link/gcfa-code.png"
-        />
       </main>
     </>
   )
