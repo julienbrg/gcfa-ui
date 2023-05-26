@@ -39,7 +39,9 @@ export function Header(props: Props) {
             DAO
           </Heading>
         </LinkComponent>
-        <Image priority height="30" width="30" alt="contract-image" src="./gnosis-owl.png" />
+        <LinkComponent target="blank" href="https://www.gnosis.io/">
+          <Image priority height="30" width="30" alt="contract-image" src="./gnosis-owl.png" />
+        </LinkComponent>
         <ConnectKitButton />
         <ThemeSwitcher />
       </Flex>
