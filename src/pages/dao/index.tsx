@@ -401,7 +401,13 @@ export default function Dao() {
           DAO activity
         </Heading>
         <br />
-        <p>Do you DAO? </p>
+        <p>This is the address of the DAO that we use to handle the funds mistakenly sent to the gCFA contract: </p>
+        <p>
+          <br />
+          <LinkComponent target="blank" href={`https://blockscout.chiadochain.net/address/0x2cdF5cde6d6b47CA9550ba36BBE618C123d41238`}>
+            <strong>0x2cdF5cde6d6b47CA9550ba36BBE618C123d41238</strong>
+          </LinkComponent>
+        </p>
         <br />
         <Text fontSize="12px" color="#45a2f8">
           <LinkComponent target="blank" href={'https://github.com/w3hc/gcfa-ui/issues'}>
