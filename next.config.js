@@ -11,18 +11,18 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'example.com',
         port: '',
-        output: 'export',
-        trailingSlash: true,
-        exportPathMap: function () {
-          return {
-            '/': { page: '/' },
-            '/dex': { page: '/dex' },
-            '/nfts': { page: '/nfts' },
-            '/dao': { page: '/dao' },
-          }
-        },
       },
     ],
+  },
+  output: 'export',
+  trailingSlash: true,
+  exportPathMap: function () {
+    return {
+      '/': { page: '/' },
+      '/dex': { page: '/dex' },
+      '/nfts': { page: '/nfts' },
+      '/dao': { page: '/dao' },
+    }
   },
 }
 
