@@ -638,13 +638,6 @@ export default function Home() {
             Stop the music
           </Button>
         )} */}
-        <Image
-          priority
-          height="800"
-          width="1000"
-          alt="contract-image"
-          src="https://bafybeidfcsm7moglsy4sng57jdwmnc4nw3p5tjheqm6vxk3ty65owrfyk4.ipfs.w3s.link/gcfa-code.png"
-        />
       </main>
     </>
   )
