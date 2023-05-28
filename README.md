@@ -24,15 +24,12 @@ npm i
 npm run dev
 ```
 
-## Latest deployments
-
-- gCFA on Chiado: https://blockscout.chiadochain.net/address/0x425F7D52ca97DA275e2218AB15cdDfE58e424Db2
-
 ## Supported networks
 
 - Gnosis Chiado Testnet
+- Gnosis Chain Mainnet
 
-## Contribs
+## Contribution workflow
 
 - Please create an item in the [gCFA project](https://github.com/orgs/w3hc/projects/5/views/2),
 - then make it an issue (in `gcfa-ui`),

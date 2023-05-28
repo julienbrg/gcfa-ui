@@ -5,7 +5,7 @@ import { LinkComponent } from '../components/layout/LinkComponent'
 import { useState, useEffect } from 'react'
 import { useFeeData, useSigner, useAccount, useBalance, useNetwork, useProvider } from 'wagmi'
 import { ethers } from 'ethers'
-import { GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI } from '../lib/consts'
+import { GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, EURE_CONTRACT_ADDRESS, EURE_CONTRACT_ABI } from '../lib/consts'
 import useSound from 'use-sound' // https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
 const stevie = 'https://bafybeicxvrehw23nzkwjcxvsytimqj2wos7dhh4evrv5kscbbj6agilcsy.ipfs.w3s.link/another-star.mp3'
 
@@ -13,7 +13,7 @@ export default function Home() {
   const { data: signer } = useSigner()
 
   const cfa = new ethers.Contract(GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, signer)
-  const eur = new ethers.Contract(EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI, signer)
+  const eur = new ethers.Contract(EURE_CONTRACT_ADDRESS, EURE_CONTRACT_ABI, signer)
   const { address, isConnecting, isDisconnected } = useAccount()
 
   const [loadingMint, setLoadingMint] = useState<boolean>(false)
