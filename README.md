@@ -10,7 +10,9 @@ The goal is build an interface for gCFA. The most common functions are accessibl
 
 The gCFA on Gnosis is directly pegged to the EURe. 1 EURe = 655.957 gCFA, and 1000 gCFA = 1.53 EURe.
 
-Live at [https://gcfa-ui.on.fleek.co/](https://gcfa-ui.on.fleek.co/)
+Live on [Fleek](https://gcfa-ui.on.fleek.co/)
+
+Video on [YouTube](https://youtu.be/Z2bCiFmgxlw)
 
 ## Install
 
@@ -24,9 +26,9 @@ npm i
 npm run dev
 ```
 
-## Latest deployments
+## Latest deployments of contracts
 
-- gCFA on Chiado: https://blockscout.chiadochain.net/address/0x425F7D52ca97DA275e2218AB15cdDfE58e424Db2
+Look at [gcfa-contracts](https://github.com/w3hc/gcfa-contracts)
 
 ## Supported networks
 
