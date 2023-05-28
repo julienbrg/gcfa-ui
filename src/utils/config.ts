@@ -1,5 +1,5 @@
 import { ThemingProps } from '@chakra-ui/react'
-import { gnosisChiado } from '@wagmi/chains'
+import { gnosis } from '@wagmi/chains'
 
 export const SITE_NAME = 'Good CFA'
 export const SITE_DESCRIPTION = 'Deposit, withdraw or transfer your gCFA.'
@@ -13,7 +13,7 @@ export const THEME_CONFIG = {
 export const SOCIAL_TWITTER = 'W3HC'
 export const SOCIAL_GITHUB = 'w3hc/nexth'
 
-export const ETH_CHAINS = [gnosisChiado]
+export const ETH_CHAINS = [gnosis]
 export const alchemyId = process.env.NEXT_PUBLIC_ARBITRUM_ALCHEMY_ID
 
 export const SERVER_SESSION_SETTINGS = {
