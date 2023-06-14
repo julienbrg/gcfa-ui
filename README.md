@@ -1,18 +1,17 @@
 # gCFA App
 
-Allows you to get gCFA.
+Allows users to deposit cEUR to get gCFA.
 
-You give it EURe (on Gnosischain Mainnet), and you'll get gCFA. Give it gCFA, and you get your EURe back. The rate is fixed (655.957 gCFA per EURe) and cannot be changed.
+You give it cEUR (on Celo Mainnet), and you'll get gCFA. Give it gCFA, and you get your cEUR back. The rate is fixed (655.957 gCFA per cEUR) and cannot be changed.
+
+The gCFA is directly pegged to the cEUR. 1 EURe = 655.957 gCFA, and 1000 gCFA = 1.53 cEUR.
+
+- Live on [Fleek](https://gcfa-ui.on.fleek.co/)
+- Video on [YouTube](https://youtu.be/Z2bCiFmgxlw)
 
 ## Motivation
 
 The goal is build an interface for gCFA. The most common functions are accessible to anyone: deposit, withdraw, and transfer.
-
-The gCFA on Gnosis is directly pegged to the EURe. 1 EURe = 655.957 gCFA, and 1000 gCFA = 1.53 EURe.
-
-Live on [Fleek](https://gcfa-ui.on.fleek.co/)
-
-Video on [YouTube](https://youtu.be/Z2bCiFmgxlw)
 
 ## Install
 
@@ -26,12 +25,13 @@ npm i
 npm run dev
 ```
 
-## Latest deployments of contracts
+## Latest contracts deployments
 
-Look at [gcfa-contracts](https://github.com/w3hc/gcfa-contracts)
+Please visit [gcfa-contracts](https://github.com/w3hc/gcfa-contracts)
 
 ## Supported networks
 
+- Celo Mainnet
 - Gnosis Chiado Testnet
 
 ## Contribs
