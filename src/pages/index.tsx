@@ -418,7 +418,7 @@ export default function Home() {
         {isDisconnected ? (
           <>
             <br />
-            <p>Please connect your wallet.</p>
+            <p style={{ color: 'red' }}>Please connect your wallet.</p>
           </>
         ) : (
           <>
