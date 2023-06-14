@@ -5,16 +5,24 @@ import { LinkComponent } from '../components/layout/LinkComponent'
 import { useState, useEffect } from 'react'
 import { useFeeData, useSigner, useAccount, useBalance, useNetwork, useProvider } from 'wagmi'
 import { ethers } from 'ethers'
-import { GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI } from '../lib/consts'
-import useSound from 'use-sound' // https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
-const stevie = 'https://bafybeicxvrehw23nzkwjcxvsytimqj2wos7dhh4evrv5kscbbj6agilcsy.ipfs.w3s.link/another-star.mp3'
+import { GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI, GCFA_MAINNET_CONTRACT_ADDRESS, CEUR_CONTRACT_ADDRESS } from '../lib/consts'
 
 export default function Home() {
   const { data: signer } = useSigner()
-
-  const cfa = new ethers.Contract(GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, signer)
-  const eur = new ethers.Contract(EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI, signer)
+  const network = useNetwork()
   const { address, isConnecting, isDisconnected } = useAccount()
+
+  let cfa
+  let eur
+  useEffect(() => {
+    if (network?.chain?.testnet === false) {
+      cfa = new ethers.Contract(GCFA_MAINNET_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, signer)
+      eur = new ethers.Contract(CEUR_CONTRACT_ADDRESS, EURM_CONTRACT_ABI, signer)
+    } else {
+      cfa = new ethers.Contract(GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, signer)
+      eur = new ethers.Contract(EURM_CONTRACT_ADDRESS, EURM_CONTRACT_ABI, signer)
+    }
+  }, [address, network])
 
   const [loadingMint, setLoadingMint] = useState<boolean>(false)
   const [mintTxLink, setMintTxLink] = useState<string>('')
@@ -46,13 +54,8 @@ export default function Home() {
   } = useBalance({
     address: address,
   })
-  const network = useNetwork()
 
   const provider = useProvider()
-
-  // const [play, { stop, pause }] = useSound(stevie, {
-  //   volume: 0.5,
-  // })
 
   const explorerUrl = network.chain?.blockExplorers?.default.url
 
@@ -88,12 +91,10 @@ export default function Home() {
     }
   }
 
-  const checkFees = () => {
-    console.log('data?.formatted:', JSON.stringify(data?.formatted))
-    return JSON.stringify(data?.formatted)
-  }
-
   const getBalances = async () => {
+    if (network?.chain?.testnet === false) {
+      return
+    }
     const val = Number(bal?.formatted).toFixed(3)
     setUserBal(String(val) + ' ' + bal?.symbol)
     console.log('xDAI bal:', Number(bal?.formatted).toFixed(4))
@@ -107,6 +108,9 @@ export default function Home() {
   }
 
   const getSupply = async () => {
+    if (network?.chain?.testnet === false) {
+      return
+    }
     const supplyRaw = await cfa.totalSupply()
     console.log('supplyRaw', supplyRaw)
     const supply = ethers.utils.formatEther(supplyRaw)
@@ -117,6 +121,9 @@ export default function Home() {
 
   const mint = async () => {
     console.log('minting...')
+    if (network?.chain?.testnet === false) {
+      return
+    }
     try {
       setLoadingMint(true)
       setMintTxLink('')
@@ -171,6 +178,9 @@ export default function Home() {
 
   const deposit = async () => {
     console.log('Depositing...')
+    if (network?.chain?.testnet === false) {
+      return
+    }
     try {
       setDepositTxLink('')
       setLoadingDeposit(true)
@@ -246,6 +256,9 @@ export default function Home() {
 
   const withdraw = async () => {
     console.log('Withdrawing...')
+    if (network?.chain?.testnet === false) {
+      return
+    }
     try {
       setWithdrawTxLink('')
       setLoadingWithdraw(true)
@@ -302,6 +315,9 @@ export default function Home() {
 
   const transfer = async () => {
     console.log('Transfering...')
+    if (network?.chain?.testnet === false) {
+      return
+    }
     try {
       setTransferTxLink('')
       setLoadingTransfer(true)
@@ -364,6 +380,9 @@ export default function Home() {
 
   const getFreeMoney = async () => {
     console.log('Getting free money...')
+    if (network?.chain?.testnet === false) {
+      return
+    }
     try {
       setFaucetTxLink('')
       setLoadingFaucet(true)
@@ -430,9 +449,14 @@ export default function Home() {
             <br />
             <p>
               Contract address:{' '}
-              <LinkComponent target="blank" href={`https://blockscout.chiadochain.net/address/${GCFA_CONTRACT_ADDRESS}`}>
-                <strong>{GCFA_CONTRACT_ADDRESS}</strong>
-              </LinkComponent>
+              {network?.chain?.testnet === false ? 
+                <LinkComponent target="blank" href={`https://blockscout.chiadochain.net/address/${GCFA_MAINNET_CONTRACT_ADDRESS}`}>
+                  <strong>{GCFA_MAINNET_CONTRACT_ADDRESS}</strong>
+                </LinkComponent> : 
+                <LinkComponent target="blank" href={`https://blockscout.chiadochain.net/address/${GCFA_CONTRACT_ADDRESS}`}>
+                  <strong>{GCFA_CONTRACT_ADDRESS}</strong>
+                </LinkComponent>
+              }
               <br />
               <Button size="xs" mr={3} mb={3} mt={2} colorScheme="blue" variant="outline" onClick={() => addTokenToMetaMask()}>
                 Add gCFA to MetaMask
