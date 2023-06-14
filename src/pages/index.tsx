@@ -1,6 +1,6 @@
 import { Heading, Button, useToast, FormControl, FormLabel, FormHelperText, Input, Text } from '@chakra-ui/react'
 import { Head } from '../components/layout/Head'
-import Image from 'next/image'
+// import Image from 'next/image'
 import { LinkComponent } from '../components/layout/LinkComponent'
 import { useState, useEffect } from 'react'
 import { useFeeData, useSigner, useAccount, useBalance, useNetwork, useProvider } from 'wagmi'
@@ -127,23 +127,6 @@ export default function Home() {
     try {
       setLoadingMint(true)
       setMintTxLink('')
-
-      // const xdaiBal = Number(bal.formatted)
-      // console.log('xdaiBal', xdaiBal)
-      // if (xdaiBal < 0.000001) {
-      //   toast({
-      //     title: 'Need xDAI',
-      //     description: "You don't have enough xDAI to cover the gas costs for that mint. Please click on the 'Get free xDAI' button.",
-      //     status: 'error',
-      //     variant: 'subtle',
-      //     duration: 20000,
-      //     position: 'top',
-      //     isClosable: true,
-      //   })
-      //   setLoadingMint(false)
-      //   return
-      // }
-
       const mint = await eur.mint(ethers.utils.parseEther(eurAmount))
       const mintReceipt = await mint.wait(1)
       console.log('tx:', mintReceipt)
@@ -159,7 +142,6 @@ export default function Home() {
         duration: 20000,
         isClosable: true,
       })
-      // play()
       getBalances()
     } catch (e) {
       setLoadingMint(false)
@@ -238,7 +220,6 @@ export default function Home() {
         isClosable: true,
       })
       getBalances()
-      // play()
     } catch (e) {
       setLoadingDeposit(false)
       console.log('error:', e)
@@ -489,16 +470,20 @@ export default function Home() {
           </>
         )}
 
-        <br />
-        {!loadingFaucet ? (
-          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={getFreeMoney}>
-            Get some free xDAI
-          </Button>
-        ) : (
-          <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Cashing in" variant="outline">
-            Cashing in
-          </Button>
-        )}
+        
+        {network?.chain?.testnet === true ?
+          (!loadingFaucet ? (
+            <><br />
+            <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={getFreeMoney}>
+              Get some free xDAI
+            </Button></>
+          ) : (
+            <><br />
+            <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Cashing in" variant="outline">
+              Cashing in
+            </Button></>
+          )) : <>[CELO balance]</>
+        }
         {faucetTxLink ? (
           <>
             <br />
@@ -513,9 +498,12 @@ export default function Home() {
             <br />
           </>
         )}
-        <br />
+        
+        
 
         <FormControl>
+        {network?.chain?.testnet === true ? 
+          <><br />
           <FormLabel>Mint EUR</FormLabel>
           <Input value={eurAmount} type="number" onChange={(e) => setEurAmount(e.target.value)} placeholder="Proposal title" />
           <FormHelperText>How many euros do you want to mint?</FormHelperText>
@@ -529,7 +517,10 @@ export default function Home() {
             <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Minting" variant="outline">
               Minting
             </Button>
-          )}
+            
+          )}</> :
+
+          <>[cEUR balance]</>}
           {mintTxLink ? (
             <>
               <br />
@@ -544,6 +535,9 @@ export default function Home() {
               <br />
             </>
           )}
+          {network?.chain?.testnet === true ?
+          <></> : <>[whitelisted]</>
+        }
         </FormControl>
         <br />
         <FormControl>
@@ -662,13 +656,13 @@ export default function Home() {
             Stop the music
           </Button>
         )} */}
-        <Image
+        {/* <Image
           priority
           height="800"
           width="1000"
           alt="contract-image"
           src="https://bafybeidfcsm7moglsy4sng57jdwmnc4nw3p5tjheqm6vxk3ty65owrfyk4.ipfs.w3s.link/gcfa-code.png"
-        />
+        /> */}
       </main>
     </>
   )
