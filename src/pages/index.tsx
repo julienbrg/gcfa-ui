@@ -108,7 +108,7 @@ export default function Home() {
       getCfaBal();
       getSupply();
     }
-  }, [address, provider]);
+  }, [address, provider, network]);
   const addTokenToMetaMask = async () => {
     if (network?.chain?.testnet === false) {
       toast({
@@ -163,7 +163,7 @@ export default function Home() {
 
   const getEurBal = async () => {
     let eur;
-    if (network?.chain?.testnet === false) {
+    if (network?.chain?.testnet === false || network?.chain?.testnet !== undefined) {
       eur = new ethers.Contract(
         CEUR_CONTRACT_ADDRESS,
         EURM_CONTRACT_ABI,
@@ -184,7 +184,8 @@ export default function Home() {
 
   const getCfaBal = async () => {
     let cfa;
-    if (network?.chain?.testnet !== true) {
+    console.log("network?.chain?.testnet:", network?.chain?.testnet)
+    if (network?.chain?.testnet === false || network?.chain?.testnet !== undefined) {
       // cfa = new ethers.Contract(GCFA_MAINNET_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, provider)
       // const y = await cfa.balanceOf(address)
       // setCfaBal(Number(y / 10 ** 18))
@@ -200,7 +201,7 @@ export default function Home() {
       );
       const y = await cfa.balanceOf(address);
       setCfaBal(Number(y / 10 ** 18));
-      console.log("cfa bal:", Number(y / 10 ** 18));
+      console.log("[getCfaBal] cfa bal:", Number(y / 10 ** 18));
       return Number(y / 10 ** 18);
     }
   };
@@ -372,7 +373,9 @@ export default function Home() {
         duration: 20000,
         isClosable: true,
       });
-      getCfaBal();
+      await getUserBal();
+      await getEurBal();
+      await getCfaBal();
     } catch (e) {
       setLoadingDeposit(false);
       console.log("error:", e);
@@ -446,7 +449,9 @@ export default function Home() {
         duration: 20000,
         isClosable: true,
       });
-      getCfaBal();
+      await getUserBal();
+      await getEurBal();
+      await getCfaBal();
     } catch (e) {
       setLoadingWithdraw(false);
       console.log("error:", e);
@@ -502,13 +507,13 @@ export default function Home() {
         return;
       }
 
-      const withdraw = await cfa.transfer(
+      const transfer = await cfa.transfer(
         recipientAddress,
         ethers.utils.parseEther(transferAmount)
       );
-      const withdrawReceipt = await withdraw.wait(1);
-      console.log("tx:", withdrawReceipt);
-      setTransferTxLink(explorerUrl + "/tx/" + withdrawReceipt.transactionHash);
+      const transferReceipt = await transfer.wait(1);
+      console.log("tx:", transferReceipt);
+      setTransferTxLink(explorerUrl + "/tx/" + transferReceipt.transactionHash);
 
       setLoadingTransfer(false);
       console.log(transferAmount + "units transferred. ✅");
@@ -523,7 +528,8 @@ export default function Home() {
         duration: 20000,
         isClosable: true,
       });
-      getCfaBal();
+      await getUserBal();
+      await getCfaBal();
     } catch (e) {
       setLoadingTransfer(false);
       console.log("error:", e);
@@ -557,10 +563,8 @@ export default function Home() {
       setFaucetTxLink("");
       setLoadingFaucet(true);
 
-      console.log("bal:", bal);
-      console.log("bal.formatted:", bal.formatted);
-      const xdaiBal = Number(bal.formatted);
-      if (xdaiBal >= 0.001) {
+      console.log("Number(bal.formatted):", Number(bal.formatted));
+      if (Number(bal.formatted) >= 0.003) {
         toast({
           title: "You already have enough xDAI",
           description:
@@ -591,7 +595,7 @@ export default function Home() {
 
       setLoadingFaucet(false);
       console.log("Done. You got 0.001 xDAI on Chiado ✅");
-      getUserBal();
+      await getUserBal();
     } catch (e) {
       setLoadingFaucet(false);
       console.log("error:", e);
@@ -676,7 +680,7 @@ export default function Home() {
                   currently holds
                   <strong>
                     {" "}
-                    {userBal} {bal?.symbol}
+                    {userBal.toFixed(5)} {bal?.symbol}
                   </strong>
                   , <strong>{cfaBal.toFixed(0)}</strong> gCFA, and{" "}
                   <strong>{eurBal.toFixed(2)}</strong> EUR.{" "}
