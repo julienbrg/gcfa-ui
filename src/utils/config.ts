@@ -2,7 +2,7 @@ import { ThemingProps } from '@chakra-ui/react'
 import { Chain, gnosisChiado } from '@wagmi/chains'
 
 export const SITE_NAME = 'Good CFA'
-export const SITE_DESCRIPTION = 'Deposit, withdraw or transfer your gCFA.'
+export const SITE_DESCRIPTION = 'Deposit, withdraw or transfer gCFA.'
 export const SITE_URL = 'https://w3hc.org'
 export const THEME_INITIAL_COLOR = 'dark'
 export const THEME_COLOR_SCHEME: ThemingProps['colorScheme'] = 'gray'
