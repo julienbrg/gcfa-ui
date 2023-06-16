@@ -84,7 +84,7 @@ export default function Home() {
   const [amountToWithdraw, setAmountToWithdraw] = useState<string>("1000");
   const [recipientAddress, setRecipientAddress] = useState<string>(address);
   const [transferAmount, setTransferAmount] = useState<string>("500");
-  const [supply, setSupply] = useState<string>("?");
+  const [supply, setSupply] = useState<number>(0);
   const [isWitelisted, setIsWitelisted] = useState<boolean>(false);
 
   const { data } = useFeeData();
@@ -109,6 +109,7 @@ export default function Home() {
       getSupply();
     }
   }, [address, provider, network]);
+  
   const addTokenToMetaMask = async () => {
     if (network?.chain?.testnet === false) {
       toast({
@@ -208,26 +209,14 @@ export default function Home() {
   };
 
   const getSupply = async () => {
-    // if (network?.chain?.testnet === false) {
-    //   toast({
-    //     title: 'Contract not deployed yet',
-    //     description: 'The gCFA contract is not available on Celo Mainnet yet.',
-    //     status: 'error',
-    //     position: 'top',
-    //     variant: 'subtle',
-    //     duration: 20000,
-    //     isClosable: true,
-    //   })
-    //   return
-    // }
     let cfa;
-    if (network?.chain?.testnet !== true) {
+    if (network?.chain?.testnet === false || network?.chain?.testnet !== undefined) {
       // cfa = new ethers.Contract(GCFA_MAINNET_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, provider)
       // const supplyRaw = await cfa.totalSupply()
       // console.log('supplyRaw', supplyRaw)
       // const supply = ethers.utils.formatEther(supplyRaw)
       // setSupply(supply)
-      setSupply("0");
+      setSupply(0);
       // console.log('setSupply', supply)
       // return supply
       return Number(0);
@@ -240,7 +229,7 @@ export default function Home() {
       const supplyRaw = await cfa.totalSupply();
       console.log("supplyRaw", supplyRaw);
       const supply = ethers.utils.formatEther(supplyRaw);
-      setSupply(supply);
+      setSupply(Number(supply));
       console.log("setSupply", supply);
       return supply;
     }
@@ -623,7 +612,7 @@ export default function Home() {
               The Good CFA (gCFA) is a crypto version of the CFA Franc, the
               official currency of 16 different countries in Africa. The gCFA is
               pegged to the cEUR. 1 cEUR = 655.957 gCFA, and 1000 gCFA = 1.53
-              cEUR. Here, you can:
+              cEUR. There are currently <strong>{supply.toFixed(0)} gCFA</strong> in circulation on {network.chain?.name}. Here, you can:
             </p>
             <br />
             <p>
@@ -681,7 +670,7 @@ export default function Home() {
                 , <strong>{cfaBal.toFixed(0)}</strong> gCFA, and{" "}
                 <strong>{eurBal.toFixed(2)}</strong> EUR.{" "}
               </p>
-            
+              <br />
           </>
         )}
 
@@ -689,7 +678,6 @@ export default function Home() {
         network?.chain?.testnet === undefined ? (
           !loadingFaucet ? (
             <>
-              <br />
               <Button
                 mr={3}
                 mb={3}
@@ -768,7 +756,6 @@ export default function Home() {
               <FormHelperText>
                 How many euros do you want to mint?
               </FormHelperText>
-
               <br />
               {!loadingMint ? (
                 <>
@@ -781,7 +768,6 @@ export default function Home() {
                   >
                     Mint EUR
                   </Button>
-                  <br />
                 </>
               ) : (
                 <>
@@ -845,9 +831,7 @@ export default function Home() {
               </Text>
             </>
           ) : (
-            <>
-              <br />
-            </>
+            <></>
           )}
           {network?.chain?.testnet === true ||
           network?.chain?.testnet === undefined ? (
@@ -861,6 +845,7 @@ export default function Home() {
             </>
           ) : (
             <>
+              <br />
               <p>
                 <WarningTwoIcon w={4} h={4} color="red.500" /> You're currently
                 not whitelisted, we need a Proof-of-Liveness which you can get
@@ -875,7 +860,6 @@ export default function Home() {
             </>
           )}
         </FormControl>
-        <br />
         <br />
         <FormControl>
           <FormLabel>Deposit</FormLabel>
