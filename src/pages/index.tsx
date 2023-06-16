@@ -109,8 +109,6 @@ export default function Home() {
       getSupply();
     }
   }, [address, provider]);
-  // }, [])
-
   const addTokenToMetaMask = async () => {
     if (network?.chain?.testnet === false) {
       toast({
@@ -154,25 +152,6 @@ export default function Home() {
       console.log(error);
     }
   };
-
-  // const getBalances = async () => {
-  //   // if (network?.chain?.testnet === false) {
-  //   //   toast({
-  //   //     title: 'Contract not deployed yet',
-  //   //     description: 'The gCFA contract is not available on Celo Mainnet yet.',
-  //   //     status: 'error',
-  //   //     position: 'top',
-  //   //     variant: 'subtle',
-  //   //     duration: 20000,
-  //   //     isClosable: true,
-  //   //   })
-  //   //   return
-  //   // }
-  //   getUserBal()
-  //   getEurBal()
-  //   getCfaBal()
-  //   getSupply()
-  // }
 
   const getUserBal = async () => {
     const val = Number(bal?.formatted)
@@ -719,395 +698,391 @@ export default function Home() {
                   <br />
                   <br />
                 </p>
-
-                {network?.chain?.testnet === true ||
-                network?.chain?.testnet === undefined ? (
-                  !loadingFaucet ? (
-                    <>
-                      <br />
-                      <Button
-                        mr={3}
-                        mb={3}
-                        colorScheme="green"
-                        variant="outline"
-                        onClick={getFreeMoney}
-                      >
-                        Get some free xDAI
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <br />
-                      <Button
-                        mr={3}
-                        mb={3}
-                        isLoading
-                        colorScheme="green"
-                        loadingText="Cashing in"
-                        variant="outline"
-                      >
-                        Cashing in
-                      </Button>
-                    </>
-                  )
-                ) : userBal !== 0 ? (
-                  <>
-                    <p>
-                      <CheckIcon w={4} h={4} color="green.500" /> You have{" "}
-                      <strong>{userBal.toFixed(4)} CELO</strong> on your wallet.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p>
-                      <WarningTwoIcon w={4} h={4} color="red.500" /> You currently don't
-                      have any CELO on your wallet, please get a handful through{" "}
-                      <LinkComponent
-                        target="blank"
-                        href={"https://www.coingecko.com/en/coins/celo#markets"}
-                      >
-                        <strong> one of these services</strong>
-                      </LinkComponent>
-                      .
-                    </p>
-                  </>
-                )}
-                {faucetTxLink ? (
-                  <>
-                    <br />
-                    <Text fontSize="12px" color="#45a2f8">
-                      <LinkComponent target="blank" href={faucetTxLink}>
-                        View your faucet tx on Etherscan:{" "}
-                        <strong>{faucetTxLink}</strong>
-                      </LinkComponent>
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <br />
-                  </>
-                )}
-
-                <FormControl>
-                  {network?.chain?.testnet === true ||
-                  network?.chain?.testnet === undefined ? (
-                    <>
-                      <br />
-                      <FormLabel>Mint EUR</FormLabel>
-                      <Input
-                        value={eurAmount}
-                        type="number"
-                        onChange={(e) => setEurAmount(e.target.value)}
-                        placeholder="Proposal title"
-                      />
-                      <FormHelperText>
-                        How many euros do you want to mint?
-                      </FormHelperText>
-
-                      <br />
-                      {!loadingMint ? (
-                        <>
-                          <Button
-                            mr={3}
-                            mb={3}
-                            colorScheme="green"
-                            variant="outline"
-                            onClick={mint}
-                          >
-                            Mint EUR
-                          </Button>
-                          <br />
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            mr={3}
-                            mb={3}
-                            isLoading
-                            colorScheme="green"
-                            loadingText="Minting"
-                            variant="outline"
-                          >
-                            Minting
-                          </Button>
-                          <br />
-                        </>
-                      )}
-                    </>
-                  ) : eurBal !== 0 ? (
-                    <>
-                      <p>
-                        <CheckIcon w={4} h={4} color="green.500" /> Your wallet
-                        currently holds 18 cEUR.
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p>
-                        <WarningTwoIcon w={4} h={4} color="red.500" /> You don't have
-                        any cEUR on your wallet right now, it's available on
-                        <LinkComponent
-                          target="blank"
-                          href={"https://app.uniswap.org/#/swap"}
-                        >
-                          <strong> Uniswap v3</strong>
-                        </LinkComponent>
-                        ,
-                        <LinkComponent
-                          target="blank"
-                          href={"https://www.coinbase.com/how-to-buy/celo-euro"}
-                        >
-                          <strong> Coinbase</strong>
-                        </LinkComponent>
-                        , or
-                        <LinkComponent
-                          target="blank"
-                          href={"https://www.coingecko.com/en/coins/celo-euro#markets"}
-                        >
-                          <strong> other exchanges</strong>
-                        </LinkComponent>
-                        .
-                      </p>
-                    </>
-                  )}
-                  {mintTxLink ? (
-                    <>
-                      <br />
-                      <Text fontSize="12px" color="#45a2f8">
-                        <LinkComponent target="blank" href={mintTxLink}>
-                          View your mint tx on Etherscan: <strong>{mintTxLink}</strong>
-                        </LinkComponent>
-                      </Text>
-                    </>
-                  ) : (
-                    <>
-                      <br />
-                    </>
-                  )}
-                  {network?.chain?.testnet === true ||
-                  network?.chain?.testnet === undefined ? (
-                    <></>
-                  ) : isWitelisted ? (
-                    <>
-                      <p>
-                        <CheckIcon w={4} h={4} color="green.500" /> You can show a valid
-                        Proof-of-Liveness.
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p>
-                        <WarningTwoIcon w={4} h={4} color="red.500" /> You're currently
-                        not whitelisted, we need a Proof-of-Liveness which you can get
-                        <LinkComponent
-                          target="blank"
-                          href={"https://gooddapp.org/#/claim"}
-                        >
-                          <strong> here</strong>
-                        </LinkComponent>
-                        .
-                      </p>
-                    </>
-                  )}
-                </FormControl>
-                <br />
-                <br />
-                <FormControl>
-                  <FormLabel>Deposit</FormLabel>
-                  <Input
-                    value={depositAmount}
-                    onChange={(e) => setDepositAmount(e.target.value)}
-                    placeholder="Proposal title"
-                  />
-                  <FormHelperText>
-                    How many euros do you want to deposit?
-                  </FormHelperText>
-
-                  <br />
-                  {!loadingDeposit ? (
-                    <>
-                      <Button
-                        mr={3}
-                        mb={3}
-                        colorScheme="green"
-                        variant="outline"
-                        onClick={deposit}
-                      >
-                        Deposit
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      mr={3}
-                      mb={3}
-                      isLoading
-                      colorScheme="green"
-                      loadingText="Depositing"
-                      variant="outline"
-                    >
-                      Depositing
-                    </Button>
-                  )}
-                  {depositTxLink ? (
-                    <>
-                      <br />
-                      <Text fontSize="12px" color="#45a2f8">
-                        <LinkComponent target="blank" href={depositTxLink}>
-                          View your deposit tx on Etherscan:{" "}
-                          <strong>{depositTxLink}</strong>
-                        </LinkComponent>
-                      </Text>
-                    </>
-                  ) : (
-                    <>
-                      <br />
-                    </>
-                  )}
-                </FormControl>
-
-                <br />
-
-                <FormControl>
-                  <FormLabel>Withdraw</FormLabel>
-                  <Input
-                    value={amountToWithdraw}
-                    onChange={(e) => setAmountToWithdraw(e.target.value)}
-                    placeholder="Proposal title"
-                  />
-                  <FormHelperText>
-                    How many gCFA do you want to withdraw?
-                  </FormHelperText>
-
-                  <br />
-                  {!loadingWithdraw ? (
-                    <Button
-                      mr={3}
-                      mb={3}
-                      colorScheme="green"
-                      variant="outline"
-                      onClick={withdraw}
-                    >
-                      Withdraw
-                    </Button>
-                  ) : (
-                    <Button
-                      mr={3}
-                      mb={3}
-                      isLoading
-                      colorScheme="green"
-                      loadingText="Withdrawing"
-                      variant="outline"
-                    >
-                      Withdrawing
-                    </Button>
-                  )}
-                  {withdrawTxLink ? (
-                    <>
-                      <br />
-                      <Text fontSize="12px" color="#45a2f8">
-                        <LinkComponent target="blank" href={withdrawTxLink}>
-                          View your withdraw tx on Etherscan:{" "}
-                          <strong>{withdrawTxLink}</strong>
-                        </LinkComponent>
-                      </Text>
-                    </>
-                  ) : (
-                    <>
-                      <br />
-                    </>
-                  )}
-                </FormControl>
-
-                <br />
-                <FormControl>
-                  <FormLabel>
-                    Transfer gCFA
-                    <Text fontSize="10px">
-                      (You currently have{" "}
-                      <LinkComponent
-                        target="blank"
-                        href={`https://blockscout.chiadochain.net/address/${address}/tokens#address-tabs`}
-                      >
-                        <strong>{cfaBal.toFixed(0)}</strong>
-                      </LinkComponent>{" "}
-                      gCFA on your wallet)
-                    </Text>
-                  </FormLabel>
-
-                  <Input
-                    value={recipientAddress}
-                    onChange={(e) => setRecipientAddress(e.target.value)}
-                  />
-                  <FormHelperText>What&apos;s the recipent address?</FormHelperText>
-                  <br />
-                  <Input
-                    value={transferAmount}
-                    onChange={(e) => setTransferAmount(e.target.value)}
-                  />
-                  <FormHelperText>
-                    How many gCFA do you want to transfer?
-                  </FormHelperText>
-                  <br />
-                  {!loadingTransfer ? (
-                    <Button
-                      mr={3}
-                      mb={3}
-                      colorScheme="green"
-                      variant="outline"
-                      onClick={transfer}
-                    >
-                      Transfer
-                    </Button>
-                  ) : (
-                    <Button
-                      mr={3}
-                      mb={3}
-                      isLoading
-                      colorScheme="green"
-                      loadingText="Transferring"
-                      variant="outline"
-                    >
-                      Transferring
-                    </Button>
-                  )}
-                  {transferTxLink ? (
-                    <>
-                      <br />
-                      <Text fontSize="12px" color="#45a2f8">
-                        <LinkComponent target="blank" href={transferTxLink}>
-                          View your transfer tx on Etherscan:{" "}
-                          <strong>{transferTxLink}</strong>
-                        </LinkComponent>
-                      </Text>
-                    </>
-                  ) : (
-                    <>
-                      <br />
-                    </>
-                  )}
-                </FormControl>
-
-                <br />
-                {/* {txLink && (
-                  <Button colorScheme="red" variant="outline" onClick={() => stop()}>
-                    Stop the music
-                  </Button>
-                )} */}
-                {/* <Image
-                  priority
-                  height="800"
-                  width="1000"
-                  alt="contract-image"
-                  src="https://bafybeidfcsm7moglsy4sng57jdwmnc4nw3p5tjheqm6vxk3ty65owrfyk4.ipfs.w3s.link/gcfa-code.png"
-                /> */}
-
-
               </>
             )}
           </>
         )}
 
-        
+        {network?.chain?.testnet === true ||
+        network?.chain?.testnet === undefined ? (
+          !loadingFaucet ? (
+            <>
+              <br />
+              <Button
+                mr={3}
+                mb={3}
+                colorScheme="green"
+                variant="outline"
+                onClick={getFreeMoney}
+              >
+                Get some free xDAI
+              </Button>
+            </>
+          ) : (
+            <>
+              <br />
+              <Button
+                mr={3}
+                mb={3}
+                isLoading
+                colorScheme="green"
+                loadingText="Cashing in"
+                variant="outline"
+              >
+                Cashing in
+              </Button>
+            </>
+          )
+        ) : userBal !== 0 ? (
+          <>
+            <p>
+              <CheckIcon w={4} h={4} color="green.500" /> You have{" "}
+              <strong>{userBal.toFixed(4)} CELO</strong> on your wallet.
+            </p>
+          </>
+        ) : (
+          <>
+            <p>
+              <WarningTwoIcon w={4} h={4} color="red.500" /> You currently don't
+              have any CELO on your wallet, please get a handful through{" "}
+              <LinkComponent
+                target="blank"
+                href={"https://www.coingecko.com/en/coins/celo#markets"}
+              >
+                <strong> one of these services</strong>
+              </LinkComponent>
+              .
+            </p>
+          </>
+        )}
+        {faucetTxLink ? (
+          <>
+            <br />
+            <Text fontSize="12px" color="#45a2f8">
+              <LinkComponent target="blank" href={faucetTxLink}>
+                View your faucet tx on Etherscan:{" "}
+                <strong>{faucetTxLink}</strong>
+              </LinkComponent>
+            </Text>
+          </>
+        ) : (
+          <>
+            <br />
+          </>
+        )}
+
+        <FormControl>
+          {network?.chain?.testnet === true ||
+          network?.chain?.testnet === undefined ? (
+            <>
+              <br />
+              <FormLabel>Mint EUR</FormLabel>
+              <Input
+                value={eurAmount}
+                type="number"
+                onChange={(e) => setEurAmount(e.target.value)}
+                placeholder="Proposal title"
+              />
+              <FormHelperText>
+                How many euros do you want to mint?
+              </FormHelperText>
+
+              <br />
+              {!loadingMint ? (
+                <>
+                  <Button
+                    mr={3}
+                    mb={3}
+                    colorScheme="green"
+                    variant="outline"
+                    onClick={mint}
+                  >
+                    Mint EUR
+                  </Button>
+                  <br />
+                </>
+              ) : (
+                <>
+                  <Button
+                    mr={3}
+                    mb={3}
+                    isLoading
+                    colorScheme="green"
+                    loadingText="Minting"
+                    variant="outline"
+                  >
+                    Minting
+                  </Button>
+                  <br />
+                </>
+              )}
+            </>
+          ) : eurBal !== 0 ? (
+            <>
+              <p>
+                <CheckIcon w={4} h={4} color="green.500" /> Your wallet
+                currently holds 18 cEUR.
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                <WarningTwoIcon w={4} h={4} color="red.500" /> You don't have
+                any cEUR on your wallet right now, it's available on
+                <LinkComponent
+                  target="blank"
+                  href={"https://app.uniswap.org/#/swap"}
+                >
+                  <strong> Uniswap v3</strong>
+                </LinkComponent>
+                ,
+                <LinkComponent
+                  target="blank"
+                  href={"https://www.coinbase.com/how-to-buy/celo-euro"}
+                >
+                  <strong> Coinbase</strong>
+                </LinkComponent>
+                , or
+                <LinkComponent
+                  target="blank"
+                  href={"https://www.coingecko.com/en/coins/celo-euro#markets"}
+                >
+                  <strong> other exchanges</strong>
+                </LinkComponent>
+                .
+              </p>
+            </>
+          )}
+          {mintTxLink ? (
+            <>
+              <br />
+              <Text fontSize="12px" color="#45a2f8">
+                <LinkComponent target="blank" href={mintTxLink}>
+                  View your mint tx on Etherscan: <strong>{mintTxLink}</strong>
+                </LinkComponent>
+              </Text>
+            </>
+          ) : (
+            <>
+              <br />
+            </>
+          )}
+          {network?.chain?.testnet === true ||
+          network?.chain?.testnet === undefined ? (
+            <></>
+          ) : isWitelisted ? (
+            <>
+              <p>
+                <CheckIcon w={4} h={4} color="green.500" /> You can show a valid
+                Proof-of-Liveness.
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                <WarningTwoIcon w={4} h={4} color="red.500" /> You're currently
+                not whitelisted, we need a Proof-of-Liveness which you can get
+                <LinkComponent
+                  target="blank"
+                  href={"https://gooddapp.org/#/claim"}
+                >
+                  <strong> here</strong>
+                </LinkComponent>
+                .
+              </p>
+            </>
+          )}
+        </FormControl>
+        <br />
+        <br />
+        <FormControl>
+          <FormLabel>Deposit</FormLabel>
+          <Input
+            value={depositAmount}
+            onChange={(e) => setDepositAmount(e.target.value)}
+            placeholder="Proposal title"
+          />
+          <FormHelperText>
+            How many euros do you want to deposit?
+          </FormHelperText>
+
+          <br />
+          {!loadingDeposit ? (
+            <>
+              <Button
+                mr={3}
+                mb={3}
+                colorScheme="green"
+                variant="outline"
+                onClick={deposit}
+              >
+                Deposit
+              </Button>
+            </>
+          ) : (
+            <Button
+              mr={3}
+              mb={3}
+              isLoading
+              colorScheme="green"
+              loadingText="Depositing"
+              variant="outline"
+            >
+              Depositing
+            </Button>
+          )}
+          {depositTxLink ? (
+            <>
+              <br />
+              <Text fontSize="12px" color="#45a2f8">
+                <LinkComponent target="blank" href={depositTxLink}>
+                  View your deposit tx on Etherscan:{" "}
+                  <strong>{depositTxLink}</strong>
+                </LinkComponent>
+              </Text>
+            </>
+          ) : (
+            <>
+              <br />
+            </>
+          )}
+        </FormControl>
+
+        <br />
+
+        <FormControl>
+          <FormLabel>Withdraw</FormLabel>
+          <Input
+            value={amountToWithdraw}
+            onChange={(e) => setAmountToWithdraw(e.target.value)}
+            placeholder="Proposal title"
+          />
+          <FormHelperText>
+            How many gCFA do you want to withdraw?
+          </FormHelperText>
+
+          <br />
+          {!loadingWithdraw ? (
+            <Button
+              mr={3}
+              mb={3}
+              colorScheme="green"
+              variant="outline"
+              onClick={withdraw}
+            >
+              Withdraw
+            </Button>
+          ) : (
+            <Button
+              mr={3}
+              mb={3}
+              isLoading
+              colorScheme="green"
+              loadingText="Withdrawing"
+              variant="outline"
+            >
+              Withdrawing
+            </Button>
+          )}
+          {withdrawTxLink ? (
+            <>
+              <br />
+              <Text fontSize="12px" color="#45a2f8">
+                <LinkComponent target="blank" href={withdrawTxLink}>
+                  View your withdraw tx on Etherscan:{" "}
+                  <strong>{withdrawTxLink}</strong>
+                </LinkComponent>
+              </Text>
+            </>
+          ) : (
+            <>
+              <br />
+            </>
+          )}
+        </FormControl>
+
+        <br />
+        <FormControl>
+          <FormLabel>
+            Transfer gCFA
+            <Text fontSize="10px">
+              (You currently have{" "}
+              <LinkComponent
+                target="blank"
+                href={`https://blockscout.chiadochain.net/address/${address}/tokens#address-tabs`}
+              >
+                <strong>{cfaBal.toFixed(0)}</strong>
+              </LinkComponent>{" "}
+              gCFA on your wallet)
+            </Text>
+          </FormLabel>
+
+          <Input
+            value={recipientAddress}
+            onChange={(e) => setRecipientAddress(e.target.value)}
+          />
+          <FormHelperText>What&apos;s the recipent address?</FormHelperText>
+          <br />
+          <Input
+            value={transferAmount}
+            onChange={(e) => setTransferAmount(e.target.value)}
+          />
+          <FormHelperText>
+            How many gCFA do you want to transfer?
+          </FormHelperText>
+          <br />
+          {!loadingTransfer ? (
+            <Button
+              mr={3}
+              mb={3}
+              colorScheme="green"
+              variant="outline"
+              onClick={transfer}
+            >
+              Transfer
+            </Button>
+          ) : (
+            <Button
+              mr={3}
+              mb={3}
+              isLoading
+              colorScheme="green"
+              loadingText="Transferring"
+              variant="outline"
+            >
+              Transferring
+            </Button>
+          )}
+          {transferTxLink ? (
+            <>
+              <br />
+              <Text fontSize="12px" color="#45a2f8">
+                <LinkComponent target="blank" href={transferTxLink}>
+                  View your transfer tx on Etherscan:{" "}
+                  <strong>{transferTxLink}</strong>
+                </LinkComponent>
+              </Text>
+            </>
+          ) : (
+            <>
+              <br />
+            </>
+          )}
+        </FormControl>
+
+        <br />
+        {/* {txLink && (
+          <Button colorScheme="red" variant="outline" onClick={() => stop()}>
+            Stop the music
+          </Button>
+        )} */}
+        {/* <Image
+          priority
+          height="800"
+          width="1000"
+          alt="contract-image"
+          src="https://bafybeidfcsm7moglsy4sng57jdwmnc4nw3p5tjheqm6vxk3ty65owrfyk4.ipfs.w3s.link/gcfa-code.png"
+        /> */}
       </main>
     </>
   );
