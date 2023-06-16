@@ -155,9 +155,10 @@ export default function Home() {
 
   const getUserBal = async () => {
     const val = Number(bal?.formatted)
+    console.log("val:", val)
     setUserBal(val)
-    console.log('CELO bal:', Number(bal?.formatted).toFixed(4))
-    return Number(bal?.formatted).toFixed(4)
+    console.log('CELO bal:', Number(bal?.formatted))
+    return Number(bal?.formatted)
     // return Number(0);
   };
 
@@ -594,6 +595,7 @@ export default function Home() {
       console.log("x:", Number(x / 10 ** 18));
 
       setLoadingFaucet(false);
+      setLoadingDeposit(false);
       console.log("Done. You got 0.001 xDAI on Chiado ✅");
       await getUserBal();
     } catch (e) {
@@ -667,43 +669,19 @@ export default function Home() {
                 Add gCFA to MetaMask
               </Button>
             </p>
-            {/* <br />
-            <p>
-              Current total supply: <strong>{supply}</strong> gCFA
-            </p> */}
             <br />
-            {cfaBal || eurBal ? (
-              <>
-                <p>
-                  You&apos;re connected to{" "}
-                  <strong>{network.chain?.name}</strong> and your wallet
-                  currently holds
-                  <strong>
-                    {" "}
-                    {userBal.toFixed(5)} {bal?.symbol}
-                  </strong>
-                  , <strong>{cfaBal.toFixed(0)}</strong> gCFA, and{" "}
-                  <strong>{eurBal.toFixed(2)}</strong> EUR.{" "}
-                </p>
-                {/* <Button size="xs" mr={3} mb={3} mt={2} colorScheme="blue" variant="outline" onClick={() => getBalances()}>
-                    Refresh balances
-                  </Button>
-                <br /><br /> */}
-              </>
-            ) : (
-              <>
-                <p>
-                  You&apos;re connected to{" "}
-                  <strong>{network.chain?.name}</strong>.
-                  <br />
-                  {/* <Button size="xs" mr={3} mb={3} mt={2} colorScheme="blue" variant="outline" onClick={() => getBalances()}>
-                    Refresh balances
-                  </Button> */}
-                  <br />
-                  <br />
-                </p>
-              </>
-            )}
+              <p>
+                You&apos;re connected to{" "}
+                <strong>{network.chain?.name}</strong> and your wallet
+                currently holds
+                <strong>
+                  {" "}
+                  {userBal.toFixed(5)} {bal?.symbol}
+                </strong>
+                , <strong>{cfaBal.toFixed(0)}</strong> gCFA, and{" "}
+                <strong>{eurBal.toFixed(2)}</strong> EUR.{" "}
+              </p>
+            
           </>
         )}
 
