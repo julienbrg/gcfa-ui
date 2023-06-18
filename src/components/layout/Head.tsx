@@ -10,7 +10,18 @@ interface Props {
 export function Head(props: Props) {
   return (
     <NextHead>
-      <title>{props.title ?? SITE_NAME}</title>
+      <title>
+        {props.title ?? SITE_NAME} {' '}
+      </title>
+      <meta property="og:url" content="https://gcfa-ui.on.fleek.co/" />
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content={props.title ?? SITE_NAME} />
+      <meta name="twitter:card" content={SITE_DESCRIPTION} />
+      <meta property="og:description" content={props.description ?? SITE_DESCRIPTION} />
+      <meta
+        property="og:image"
+        content={'https://bafybeia3gyu6k3hfutyw2blt55i22ywhhbidhkib5yq3zje4r3hzeewvpy.ipfs.w3s.link/green-gold-yellow-red-africa-flag-mens-tall-t-shirt.jpg'}
+      />
       <meta name="description" content={props.description ?? SITE_DESCRIPTION} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
     </NextHead>

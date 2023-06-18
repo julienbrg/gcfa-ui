@@ -1,4 +1,5 @@
 export const GCFA_CONTRACT_ADDRESS = '0x425F7D52ca97DA275e2218AB15cdDfE58e424Db2'
+export const GCFA_MAINNET_CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const GCFA_CONTRACT_ABI = [
   {
     "inputs": [
@@ -406,7 +407,7 @@ export const GCFA_CONTRACT_ABI = [
   }
 ]
 export const EURM_CONTRACT_ADDRESS = '0x4bDf99B0e13457A367f4D1ffCEfB8cEC88f36199'
-
+export const CEUR_CONTRACT_ADDRESS = '0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73'
 export const EURM_CONTRACT_ABI = [
   {
     inputs: [],
