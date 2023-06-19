@@ -827,7 +827,7 @@ export default function Home() {
             <>
               <p>
                 <CheckIcon w={4} h={4} color="green.500" /> Your wallet
-                currently holds 18 cEUR.
+                currently holds <strong>{eurBal.toFixed(2)} cEUR</strong>.
               </p>
             </>
           ) : (
