@@ -143,11 +143,11 @@ export default function Home() {
       });
 
       if (wasAdded) {
-        console.log("gCFA Added to MetaMask!");
+        // console.log("gCFA Added to MetaMask!");
       } else {
-        console.log(
-          "There was an error, we couldn't add the gCFA token to MetaMask"
-        );
+        // console.log(
+        //   "There was an error, we couldn't add the gCFA token to MetaMask"
+        // );
       }
     } catch (error) {
       console.log(error);
@@ -156,9 +156,9 @@ export default function Home() {
 
   const getUserBal = async () => {
     const val = Number(bal?.formatted)
-    console.log("val:", val)
+    // console.log("val:", val)
     setUserBal(val)
-    console.log('CELO bal:', Number(bal?.formatted))
+    // console.log('CELO bal:', Number(bal?.formatted))
     return Number(bal?.formatted)
     // return Number(0);
   };
@@ -180,13 +180,13 @@ export default function Home() {
     }
     const x = await eur.balanceOf(address);
     setEurBal(Number(x / 10 ** 18));
-    console.log("eur bal:", Number(x / 10 ** 18));
+    // console.log("eur bal:", Number(x / 10 ** 18));
     return Number(x / 10 ** 18);
   };
 
   const getCfaBal = async () => {
     let cfa;
-    console.log("network?.chain?.testnet:", network?.chain?.testnet)
+    // console.log("network?.chain?.testnet:", network?.chain?.testnet)
     if (network?.chain?.testnet === false || network?.chain?.testnet !== undefined) {
       // cfa = new ethers.Contract(GCFA_MAINNET_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, provider)
       // const y = await cfa.balanceOf(address)
@@ -203,7 +203,7 @@ export default function Home() {
       );
       const y = await cfa.balanceOf(address);
       setCfaBal(Number(y / 10 ** 18));
-      console.log("[getCfaBal] cfa bal:", Number(y / 10 ** 18));
+      // console.log("[getCfaBal] cfa bal:", Number(y / 10 ** 18));
       return Number(y / 10 ** 18);
     }
   };
@@ -227,10 +227,10 @@ export default function Home() {
         provider
       );
       const supplyRaw = await cfa.totalSupply();
-      console.log("supplyRaw", supplyRaw);
+      // console.log("supplyRaw", supplyRaw);
       const supply = ethers.utils.formatEther(supplyRaw);
       setSupply(Number(supply));
-      console.log("setSupply", supply);
+      // console.log("setSupply", supply);
       return supply;
     }
   };
@@ -326,17 +326,17 @@ export default function Home() {
         ethers.utils.parseEther(depositAmount)
       );
       const approveReceipt = await approveTx.wait(1);
-      console.log("tx:", approveReceipt);
+      // console.log("tx:", approveReceipt);
 
-      console.log("GCFA_CONTRACT_ADDRESS:", GCFA_CONTRACT_ADDRESS);
-      console.log("GCFA_CONTRACT_ABI:", GCFA_CONTRACT_ABI);
-      console.log("cfa.address:", cfa.address);
+      // console.log("GCFA_CONTRACT_ADDRESS:", GCFA_CONTRACT_ADDRESS);
+      // console.log("GCFA_CONTRACT_ABI:", GCFA_CONTRACT_ABI);
+      // console.log("cfa.address:", cfa.address);
 
       const check = await cfa.name();
-      console.log("check:", check);
+      // console.log("check:", check);
 
       const check2 = await eur.balanceOf(address);
-      console.log("check2 (EUR bal):", check2 / 10 ** 18);
+      // console.log("check2 (EUR bal):", check2 / 10 ** 18);
 
       const deposit = await cfa.depositFor(
         address,
@@ -347,10 +347,10 @@ export default function Home() {
       setDepositTxLink(explorerUrl + "/tx/" + depositReceipt.transactionHash);
 
       const check3 = await cfa.balanceOf(address);
-      console.log("check3 (CFA bal):", check3 / 10 ** 18);
+      // console.log("check3 (CFA bal):", check3 / 10 ** 18);
 
       const check4 = await eur.balanceOf(address);
-      console.log("check4 (EUR bal):", check4 / 10 ** 18);
+      // console.log("check4 (EUR bal):", check4 / 10 ** 18);
 
       setLoadingDeposit(false);
       console.log("Deposited. ✅");
@@ -506,8 +506,8 @@ export default function Home() {
       setTransferTxLink(explorerUrl + "/tx/" + transferReceipt.transactionHash);
 
       setLoadingTransfer(false);
-      console.log(transferAmount + "units transferred. ✅");
-      console.log("transferAmount", transferAmount);
+      console.log(transferAmount, "units transferred. ✅");
+      // console.log("transferAmount", transferAmount);
       toast({
         title: "Successful transfer",
         description:
@@ -553,7 +553,7 @@ export default function Home() {
       setFaucetTxLink("");
       setLoadingFaucet(true);
 
-      console.log("Number(bal.formatted):", Number(bal.formatted));
+      // console.log("Number(bal.formatted):", Number(bal.formatted));
       if (Number(bal.formatted) >= 0.003) {
         toast({
           title: "You already have enough xDAI",
@@ -581,7 +581,7 @@ export default function Home() {
       setFaucetTxLink(explorerUrl + "/tx/" + txReceipt.transactionHash);
 
       const x = await eur.balanceOf(address);
-      console.log("x:", Number(x / 10 ** 18));
+      // console.log("x:", Number(x / 10 ** 18));
 
       setLoadingFaucet(false);
       setLoadingDeposit(false);
