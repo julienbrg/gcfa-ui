@@ -32,7 +32,7 @@ Please visit [gcfa-contracts](https://github.com/w3hc/gcfa-contracts)
 ## Supported networks
 
 - Celo Mainnet
-- Gnosis Chiado Testnet
+- Celo Alfajores Testnet
 
 ## Contribs
 

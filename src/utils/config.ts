@@ -1,5 +1,5 @@
 import { ThemingProps } from '@chakra-ui/react'
-import { Chain, gnosisChiado } from '@wagmi/chains'
+import { Chain } from '@wagmi/chains'
 
 export const SITE_NAME = 'Good CFA'
 export const SITE_DESCRIPTION = 'Deposit, withdraw or transfer gCFA.'
@@ -36,7 +36,30 @@ const celo: Chain = {
   testnet: false,
 }
 
-export const ETH_CHAINS = [gnosisChiado, celo]
+const alfajores: Chain = {
+  id: 44787,
+  name: 'Celo Alfajores Testnet',
+  network: 'Celo Alfajores Testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'CELO',
+    symbol: 'CELO',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://celo-alfajores.infura.io/v3/2cd8708d4b6546ba8ab1dceacc3c1447'],
+    },
+    public: {
+      http: ['https://celo-alfajores.infura.io/v3/2cd8708d4b6546ba8ab1dceacc3c1447'],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'Celoscan', url: 'https://alfajores.celoscan.io/' },
+  },
+  testnet: true,
+}
+
+export const ETH_CHAINS = [celo, alfajores]
 export const alchemyId = process.env.NEXT_PUBLIC_ARBITRUM_ALCHEMY_ID
 
 export const SERVER_SESSION_SETTINGS = {

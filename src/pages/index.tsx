@@ -26,11 +26,13 @@ import { ethers } from "ethers";
 import {
   GCFA_CONTRACT_ADDRESS,
   GCFA_CONTRACT_ABI,
+  GCFA_CONTRACT_ALFAJORES_TESTNET_ABI,
   EURM_CONTRACT_ADDRESS,
   EURM_CONTRACT_ABI,
   GCFA_MAINNET_CONTRACT_ADDRESS,
   CEUR_CONTRACT_ADDRESS,
   NAMESERVICE_MAINNET_CONTRACT_ADDRESS,
+  NAMESERVICE_ALFAJORES_TESTNET_CONTRACT_ADDRESS,
   NAMESERVICE_MAINNET_CONTRACT_ABI,
   IDENTITY_MAINNET_CONTRACT_ABI
 
@@ -45,7 +47,7 @@ export default function Home() {
   let cfa;
   let eur;
   useEffect(() => {
-    if (network?.chain?.testnet === false) {
+    if (network?.chain?.testnet === false || network?.chain?.testnet !== undefined) {
       cfa = new ethers.Contract(
         GCFA_MAINNET_CONTRACT_ADDRESS,
         GCFA_CONTRACT_ABI,
@@ -59,7 +61,7 @@ export default function Home() {
     } else {
       cfa = new ethers.Contract(
         GCFA_CONTRACT_ADDRESS,
-        GCFA_CONTRACT_ABI,
+        GCFA_CONTRACT_ALFAJORES_TESTNET_ABI,
         signer
       );
       eur = new ethers.Contract(
@@ -111,7 +113,7 @@ export default function Home() {
       getEurBal();
       getCfaBal();
       getSupply();
-      getIsWhitelisted();
+      // getIsWhitelisted();
     }
   }, [address, provider, network]);
   
@@ -169,8 +171,10 @@ export default function Home() {
   };
 
   const getEurBal = async () => {
+    console.log("getEurBal start")
+    console.log("network?.chain?.testnet=", network?.chain?.testnet)
     let eur;
-    if (network?.chain?.testnet === false || network?.chain?.testnet !== undefined) {
+    if (network?.chain?.testnet === false) {
       eur = new ethers.Contract(
         CEUR_CONTRACT_ADDRESS,
         EURM_CONTRACT_ABI,
@@ -183,10 +187,12 @@ export default function Home() {
         provider
       );
     }
+    console.log("address:", address)
     const x = await eur.balanceOf(address);
     setEurBal(Number(x / 10 ** 18));
-    // console.log("eur bal:", Number(x / 10 ** 18));
+    console.log("eur bal:", Number(x / 10 ** 18));
     return Number(x / 10 ** 18);
+    console.log("getEurBal end")
   };
 
   const getCfaBal = async () => {
@@ -203,7 +209,7 @@ export default function Home() {
     } else {
       cfa = new ethers.Contract(
         GCFA_CONTRACT_ADDRESS,
-        GCFA_CONTRACT_ABI,
+        GCFA_CONTRACT_ALFAJORES_TESTNET_ABI,
         provider
       );
       const y = await cfa.balanceOf(address);
@@ -241,8 +247,25 @@ export default function Home() {
       setIsWhitelisted(callToIdentity)
       
     } else {
-      setIsWhitelisted(false)
-      return false;
+      const nameService = new ethers.Contract(
+        NAMESERVICE_ALFAJORES_TESTNET_CONTRACT_ADDRESS,
+        NAMESERVICE_MAINNET_CONTRACT_ABI,
+        provider
+      );
+      
+      const identityAddress = await nameService.getAddress("IDENTITY") // should return 0xC361A6E67822a0EDc17D899227dd9FC50BD62F42 
+      console.log('identityAddress:', identityAddress)
+
+      const identity = new ethers.Contract(
+        identityAddress,
+        IDENTITY_MAINNET_CONTRACT_ABI,
+        provider
+      );
+      console.log('identity contract:', identity)
+
+      const callToIdentity = await identity.isWhitelisted(address)
+      console.log('callToIdentity:', callToIdentity)
+      setIsWhitelisted(callToIdentity)
     }
   };
 
@@ -261,7 +284,7 @@ export default function Home() {
     } else {
       cfa = new ethers.Contract(
         GCFA_CONTRACT_ADDRESS,
-        GCFA_CONTRACT_ABI,
+        GCFA_CONTRACT_ALFAJORES_TESTNET_ABI,
         provider
       );
       const supplyRaw = await cfa.totalSupply();
@@ -290,7 +313,8 @@ export default function Home() {
     try {
       setLoadingMint(true);
       setMintTxLink("");
-      const mint = await eur.mint(ethers.utils.parseEther(eurAmount));
+      // const mint = await eur.mint(ethers.utils.parseEther(eurAmount));
+      const mint = await eur.mint();
       const mintReceipt = await mint.wait(1);
       console.log("tx:", mintReceipt);
       setMintTxLink(explorerUrl + "/tx/" + mintReceipt.transactionHash);
@@ -300,7 +324,7 @@ export default function Home() {
         title: "Successful mint",
         position: "top",
         description:
-          "You've just minted new euros! You can go ahead and click on 'Deposit'",
+          "You've just minted 100 euros! You can go ahead and click on 'Deposit'",
         status: "success",
         variant: "subtle",
         duration: 20000,
@@ -343,7 +367,6 @@ export default function Home() {
       setDepositTxLink("");
       setLoadingDeposit(true);
 
-      const xdaiBal = Number(bal.formatted);
       const eurBal = await eur.balanceOf(address);
       if (eurBal == 0) {
         toast({
@@ -594,7 +617,7 @@ export default function Home() {
       // console.log("Number(bal.formatted):", Number(bal.formatted));
       if (Number(bal.formatted) >= 0.003) {
         toast({
-          title: "You already have enough xDAI",
+          title: "You already have enough CELO",
           description:
             "You're ready: you can go ahead and click on 'Mint EUR'.",
           status: "success",
@@ -607,7 +630,8 @@ export default function Home() {
         return;
       }
 
-      const pKey = process.env.NEXT_PUBLIC_CHIADO_PRIVATE_KEY; // 0x3E536E5d7cB97743B15DC9543ce9C16C0E3aE10F
+      const pKey = process.env.NEXT_PUBLIC_FAUCET_PRIVATE_KEY; // 0x3E536E5d7cB97743B15DC9543ce9C16C0E3aE10F
+      console.log("pKey:", pKey)
       const specialSigner = new ethers.Wallet(pKey, provider);
 
       const tx = await specialSigner.sendTransaction({
@@ -623,7 +647,7 @@ export default function Home() {
 
       setLoadingFaucet(false);
       setLoadingDeposit(false);
-      console.log("Done. You got 0.001 xDAI on Chiado ✅");
+      console.log("Done. You got 0.001 CELO on Alfajores Testnet ✅");
       await getUserBal();
     } catch (e) {
       setLoadingFaucet(false);
@@ -723,7 +747,7 @@ export default function Home() {
                 variant="outline"
                 onClick={getFreeMoney}
               >
-                Get some free xDAI
+                Get some free CELO
               </Button>
             </>
           ) : (
