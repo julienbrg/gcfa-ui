@@ -30,6 +30,10 @@ import {
   EURM_CONTRACT_ABI,
   GCFA_MAINNET_CONTRACT_ADDRESS,
   CEUR_CONTRACT_ADDRESS,
+  NAMESERVICE_MAINNET_CONTRACT_ADDRESS,
+  NAMESERVICE_MAINNET_CONTRACT_ABI,
+  IDENTITY_MAINNET_CONTRACT_ABI
+
 } from "../lib/consts";
 
 export default function Home() {
@@ -85,7 +89,7 @@ export default function Home() {
   const [recipientAddress, setRecipientAddress] = useState<string>(address);
   const [transferAmount, setTransferAmount] = useState<string>("500");
   const [supply, setSupply] = useState<number>(0);
-  const [isWitelisted, setIsWitelisted] = useState<boolean>(false);
+  const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
 
   const { data } = useFeeData();
 
@@ -107,6 +111,7 @@ export default function Home() {
       getEurBal();
       getCfaBal();
       getSupply();
+      getIsWhitelisted();
     }
   }, [address, provider, network]);
   
@@ -205,6 +210,39 @@ export default function Home() {
       setCfaBal(Number(y / 10 ** 18));
       // console.log("[getCfaBal] cfa bal:", Number(y / 10 ** 18));
       return Number(y / 10 ** 18);
+    }
+  };
+
+  const getIsWhitelisted = async () => {
+
+    // IIdentity(nameService.getAddress("IDENTITY")).isWhitelisted(address)
+
+    if (network?.chain?.testnet === false || network?.chain?.testnet !== undefined) {
+      const nameService = new ethers.Contract(
+        NAMESERVICE_MAINNET_CONTRACT_ADDRESS,
+        NAMESERVICE_MAINNET_CONTRACT_ABI,
+        provider
+      );
+      
+      const identityAddress = await nameService.getAddress("IDENTITY") // should return 0xC361A6E67822a0EDc17D899227dd9FC50BD62F42 
+      console.log('identityAddress:', identityAddress)
+
+      const identity = new ethers.Contract(
+        // IDENTITY_MAINNET_CONTRACT_ADDRESS,
+        // "0x3df6ea625866df8d0a61408a122c484b98f3184c",
+        identityAddress,
+        IDENTITY_MAINNET_CONTRACT_ABI,
+        provider
+      );
+      console.log('identity contract:', identity)
+
+      const callToIdentity = await identity.isWhitelisted(address)
+      console.log('callToIdentity:', callToIdentity)
+      setIsWhitelisted(callToIdentity)
+      
+    } else {
+      setIsWhitelisted(false)
+      return false;
     }
   };
 
@@ -836,8 +874,9 @@ export default function Home() {
           {network?.chain?.testnet === true ||
           network?.chain?.testnet === undefined ? (
             <></>
-          ) : isWitelisted ? (
+          ) : isWhitelisted ? (
             <>
+              <br />
               <p>
                 <CheckIcon w={4} h={4} color="green.500" /> You can show a valid
                 Proof-of-Liveness.
